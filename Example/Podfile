@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'YLT_SIP_Example' do
+  pod 'YLT_SIP', :path => '../'
+
+  target 'YLT_SIP_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

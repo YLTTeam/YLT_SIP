@@ -1,0 +1,6 @@
+framework module Pods_YLT_SIP_Tests {
+  umbrella header "Pods-YLT_SIP_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}

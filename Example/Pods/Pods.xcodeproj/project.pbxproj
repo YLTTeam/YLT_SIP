@@ -1,0 +1,703 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		12016CB7DAB4526B02A3652B03B64153 /* YLT_SIP-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF1C268088A169194F179494B9AB513 /* YLT_SIP-dummy.m */; };
+		3F5BC5257756E4BF053B6CD9EF8908C8 /* Pods-YLT_SIP_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A154EF32CA9D74AFBFFC896D4DF5C487 /* Pods-YLT_SIP_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		64DCF08015B0B968BA9D2DA76E419871 /* Pods-YLT_SIP_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A3CB0800303C027F424E9CB0E70848EF /* Pods-YLT_SIP_Example-dummy.m */; };
+		85E3D5FEBC996E25461F9C441572F7B5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		927EE796BA7672D44EC73288976A79AF /* YLT_SIP-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 55E88E7074A56C0EAE943A7451837EB8 /* YLT_SIP-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C6E2F67A9F0CEA97B351AE2EC46CEA60 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		D5DD175235B875E67F1C390A377A2326 /* Pods-YLT_SIP_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F86F8AF5029FDB4D05937D8D1D5119A6 /* Pods-YLT_SIP_Tests-dummy.m */; };
+		D9B724BCA8377EE71D7EE73ADFE32184 /* Pods-YLT_SIP_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F5C7BC2A5881AFB37E8BCA86538B316 /* Pods-YLT_SIP_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F0BCBD228835BD04036E5DF534CF8624 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
+		FA312CFB1FA7EC1F00FC35B4 /* YLT_SIP.h in Headers */ = {isa = PBXBuildFile; fileRef = FA312CFA1FA7EC1F00FC35B4 /* YLT_SIP.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		41B82456162EBEDB666637F3776C4E8C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 871F741CB9146AF174C967DDA1D319DD;
+			remoteInfo = YLT_SIP;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0669D27618213B36BA14826E2AA46702 /* Pods-YLT_SIP_Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-YLT_SIP_Tests-resources.sh"; sourceTree = "<group>"; };
+		0FF93AAC353FD299800B628666A030F5 /* YLT_SIP-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "YLT_SIP-prefix.pch"; sourceTree = "<group>"; };
+		132D8C74AF69903A426910767D1C6876 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1650CF42AF1E50BEDB70092E8604147B /* Pods-YLT_SIP_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-YLT_SIP_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		36F5A73C359BCAA763715664FDF60D60 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		55E88E7074A56C0EAE943A7451837EB8 /* YLT_SIP-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "YLT_SIP-umbrella.h"; sourceTree = "<group>"; };
+		599F5EA21C7C941D84B504446A803902 /* YLT_SIP.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = YLT_SIP.modulemap; sourceTree = "<group>"; };
+		6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		6858680D26AFE23B81CDE9398ECC0877 /* Pods-YLT_SIP_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-YLT_SIP_Example.release.xcconfig"; sourceTree = "<group>"; };
+		68FADA8DDCE113BEEC337DA0A7591E2E /* Pods_YLT_SIP_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YLT_SIP_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A7CC1FE69F793423EEE60895265A9A2 /* Pods-YLT_SIP_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-YLT_SIP_Example.modulemap"; sourceTree = "<group>"; };
+		748E26D795C0E19FBCF67A08D4D64763 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7D64671EF756032F8CB6C11CAB8AB5AC /* Pods-YLT_SIP_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-YLT_SIP_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		7F5C7BC2A5881AFB37E8BCA86538B316 /* Pods-YLT_SIP_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-YLT_SIP_Example-umbrella.h"; sourceTree = "<group>"; };
+		821125D2985204721A5DE26F2F7ADD09 /* Pods_YLT_SIP_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YLT_SIP_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B1C41A6C7B9814EAFE06E381BA2E931 /* Pods-YLT_SIP_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-YLT_SIP_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D47B5041ACFA4C2616D7C6153DC5E14 /* Pods-YLT_SIP_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-YLT_SIP_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
+		9F8C326E38B867A688DD9CE1107692CA /* Pods-YLT_SIP_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-YLT_SIP_Example-resources.sh"; sourceTree = "<group>"; };
+		A154EF32CA9D74AFBFFC896D4DF5C487 /* Pods-YLT_SIP_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-YLT_SIP_Tests-umbrella.h"; sourceTree = "<group>"; };
+		A3CB0800303C027F424E9CB0E70848EF /* Pods-YLT_SIP_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-YLT_SIP_Example-dummy.m"; sourceTree = "<group>"; };
+		AC59A3FC1F659A6A62119A6AF8A44DA8 /* YLT_SIP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YLT_SIP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B45ED7AF26D6715BFF2B80CD798DBA15 /* Pods-YLT_SIP_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-YLT_SIP_Example-frameworks.sh"; sourceTree = "<group>"; };
+		CCBDE93EECBF388DB92BE3370EA47140 /* Pods-YLT_SIP_Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-YLT_SIP_Tests-frameworks.sh"; sourceTree = "<group>"; };
+		E3EA7E21F8EEF18FCE7A5E858B46E67C /* Pods-YLT_SIP_Tests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-YLT_SIP_Tests.modulemap"; sourceTree = "<group>"; };
+		E6901937D12AE91412BFF7004D5F67CC /* Pods-YLT_SIP_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-YLT_SIP_Example-acknowledgements.plist"; sourceTree = "<group>"; };
+		E723FF87AEC41F21131DD3EEDA42732D /* Pods-YLT_SIP_Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-YLT_SIP_Tests-acknowledgements.plist"; sourceTree = "<group>"; };
+		E909472F749CB4B3443027EADA4446F9 /* Pods-YLT_SIP_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-YLT_SIP_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		EEF1C268088A169194F179494B9AB513 /* YLT_SIP-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "YLT_SIP-dummy.m"; sourceTree = "<group>"; };
+		F3841A235946670A99EC0DE16E55B7EC /* YLT_SIP.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = YLT_SIP.xcconfig; sourceTree = "<group>"; };
+		F86F8AF5029FDB4D05937D8D1D5119A6 /* Pods-YLT_SIP_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-YLT_SIP_Tests-dummy.m"; sourceTree = "<group>"; };
+		FA312CFA1FA7EC1F00FC35B4 /* YLT_SIP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = YLT_SIP.h; path = YLT_SIP/Classes/YLT_SIP.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2FB803D8868B0F81CEC32C10F937389A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				85E3D5FEBC996E25461F9C441572F7B5 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		956C57CF9C92D13A0EE0E66EFFB898BE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C6E2F67A9F0CEA97B351AE2EC46CEA60 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C822116903969B10437DA1BB4B5F63CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0BCBD228835BD04036E5DF534CF8624 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0523E009DDF871AC95EC8DA4A3F0BAD2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				68FADA8DDCE113BEEC337DA0A7591E2E /* Pods_YLT_SIP_Example.framework */,
+				821125D2985204721A5DE26F2F7ADD09 /* Pods_YLT_SIP_Tests.framework */,
+				AC59A3FC1F659A6A62119A6AF8A44DA8 /* YLT_SIP.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3C14F57DF1A6F858F0A393E527B1CF33 /* Development Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D25A1788555D8EDFE160A03014404FB0 /* YLT_SIP */,
+			);
+			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+		42382E26533AFC2D5BCBA8D3072B74E7 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				971CED8285BECBFFDA8B96896319DF3C /* Pods-YLT_SIP_Example */,
+				5ED6AE43E9DC3AA9C02067120A48E402 /* Pods-YLT_SIP_Tests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		5ED6AE43E9DC3AA9C02067120A48E402 /* Pods-YLT_SIP_Tests */ = {
+			isa = PBXGroup;
+			children = (
+				132D8C74AF69903A426910767D1C6876 /* Info.plist */,
+				E3EA7E21F8EEF18FCE7A5E858B46E67C /* Pods-YLT_SIP_Tests.modulemap */,
+				7D64671EF756032F8CB6C11CAB8AB5AC /* Pods-YLT_SIP_Tests-acknowledgements.markdown */,
+				E723FF87AEC41F21131DD3EEDA42732D /* Pods-YLT_SIP_Tests-acknowledgements.plist */,
+				F86F8AF5029FDB4D05937D8D1D5119A6 /* Pods-YLT_SIP_Tests-dummy.m */,
+				CCBDE93EECBF388DB92BE3370EA47140 /* Pods-YLT_SIP_Tests-frameworks.sh */,
+				0669D27618213B36BA14826E2AA46702 /* Pods-YLT_SIP_Tests-resources.sh */,
+				A154EF32CA9D74AFBFFC896D4DF5C487 /* Pods-YLT_SIP_Tests-umbrella.h */,
+				1650CF42AF1E50BEDB70092E8604147B /* Pods-YLT_SIP_Tests.debug.xcconfig */,
+				E909472F749CB4B3443027EADA4446F9 /* Pods-YLT_SIP_Tests.release.xcconfig */,
+			);
+			name = "Pods-YLT_SIP_Tests";
+			path = "Target Support Files/Pods-YLT_SIP_Tests";
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				3C14F57DF1A6F858F0A393E527B1CF33 /* Development Pods */,
+				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
+				0523E009DDF871AC95EC8DA4A3F0BAD2 /* Products */,
+				42382E26533AFC2D5BCBA8D3072B74E7 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		971CED8285BECBFFDA8B96896319DF3C /* Pods-YLT_SIP_Example */ = {
+			isa = PBXGroup;
+			children = (
+				748E26D795C0E19FBCF67A08D4D64763 /* Info.plist */,
+				6A7CC1FE69F793423EEE60895265A9A2 /* Pods-YLT_SIP_Example.modulemap */,
+				9D47B5041ACFA4C2616D7C6153DC5E14 /* Pods-YLT_SIP_Example-acknowledgements.markdown */,
+				E6901937D12AE91412BFF7004D5F67CC /* Pods-YLT_SIP_Example-acknowledgements.plist */,
+				A3CB0800303C027F424E9CB0E70848EF /* Pods-YLT_SIP_Example-dummy.m */,
+				B45ED7AF26D6715BFF2B80CD798DBA15 /* Pods-YLT_SIP_Example-frameworks.sh */,
+				9F8C326E38B867A688DD9CE1107692CA /* Pods-YLT_SIP_Example-resources.sh */,
+				7F5C7BC2A5881AFB37E8BCA86538B316 /* Pods-YLT_SIP_Example-umbrella.h */,
+				8B1C41A6C7B9814EAFE06E381BA2E931 /* Pods-YLT_SIP_Example.debug.xcconfig */,
+				6858680D26AFE23B81CDE9398ECC0877 /* Pods-YLT_SIP_Example.release.xcconfig */,
+			);
+			name = "Pods-YLT_SIP_Example";
+			path = "Target Support Files/Pods-YLT_SIP_Example";
+			sourceTree = "<group>";
+		};
+		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D35AF013A5F0BAD4F32504907A52519E /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D25A1788555D8EDFE160A03014404FB0 /* YLT_SIP */ = {
+			isa = PBXGroup;
+			children = (
+				EDFF1553176BF195DE140736E1DBF0D4 /* Support Files */,
+				FA312CFA1FA7EC1F00FC35B4 /* YLT_SIP.h */,
+			);
+			name = YLT_SIP;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		D35AF013A5F0BAD4F32504907A52519E /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		EDFF1553176BF195DE140736E1DBF0D4 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				36F5A73C359BCAA763715664FDF60D60 /* Info.plist */,
+				599F5EA21C7C941D84B504446A803902 /* YLT_SIP.modulemap */,
+				F3841A235946670A99EC0DE16E55B7EC /* YLT_SIP.xcconfig */,
+				EEF1C268088A169194F179494B9AB513 /* YLT_SIP-dummy.m */,
+				0FF93AAC353FD299800B628666A030F5 /* YLT_SIP-prefix.pch */,
+				55E88E7074A56C0EAE943A7451837EB8 /* YLT_SIP-umbrella.h */,
+			);
+			name = "Support Files";
+			path = "Example/Pods/Target Support Files/YLT_SIP";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		1BE2E866AD5C8075A7663993345D052F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				927EE796BA7672D44EC73288976A79AF /* YLT_SIP-umbrella.h in Headers */,
+				FA312CFB1FA7EC1F00FC35B4 /* YLT_SIP.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4DD2001E50AF37BB09F9C842474EDDF6 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D9B724BCA8377EE71D7EE73ADFE32184 /* Pods-YLT_SIP_Example-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E040AF8EB81FEBA4E4A24686E92B7A79 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3F5BC5257756E4BF053B6CD9EF8908C8 /* Pods-YLT_SIP_Tests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		52DCCE12B61B766DC3633C42B98E04DC /* Pods-YLT_SIP_Example */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61836B416DFDEA4FF99AF2F3BCE8223A /* Build configuration list for PBXNativeTarget "Pods-YLT_SIP_Example" */;
+			buildPhases = (
+				B1CA43A9B214960C5F74CED9E30330F1 /* Sources */,
+				2FB803D8868B0F81CEC32C10F937389A /* Frameworks */,
+				4DD2001E50AF37BB09F9C842474EDDF6 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				34E394B5CBEAB4326615BC267866F93B /* PBXTargetDependency */,
+			);
+			name = "Pods-YLT_SIP_Example";
+			productName = "Pods-YLT_SIP_Example";
+			productReference = 68FADA8DDCE113BEEC337DA0A7591E2E /* Pods_YLT_SIP_Example.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		871F741CB9146AF174C967DDA1D319DD /* YLT_SIP */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7E7B99F19320D9D9BFE2FA606283813 /* Build configuration list for PBXNativeTarget "YLT_SIP" */;
+			buildPhases = (
+				30436E8A6D32B8809BF0145CBD252369 /* Sources */,
+				C822116903969B10437DA1BB4B5F63CC /* Frameworks */,
+				1BE2E866AD5C8075A7663993345D052F /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = YLT_SIP;
+			productName = YLT_SIP;
+			productReference = AC59A3FC1F659A6A62119A6AF8A44DA8 /* YLT_SIP.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		AEC304F77B1A8846B9B9D6D3AD45A0B2 /* Pods-YLT_SIP_Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3412D1D0D82375A346CC3AB757AFD8C /* Build configuration list for PBXNativeTarget "Pods-YLT_SIP_Tests" */;
+			buildPhases = (
+				4423A4F90734908808999A313C01404A /* Sources */,
+				956C57CF9C92D13A0EE0E66EFFB898BE /* Frameworks */,
+				E040AF8EB81FEBA4E4A24686E92B7A79 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-YLT_SIP_Tests";
+			productName = "Pods-YLT_SIP_Tests";
+			productReference = 821125D2985204721A5DE26F2F7ADD09 /* Pods_YLT_SIP_Tests.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0830;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = 0523E009DDF871AC95EC8DA4A3F0BAD2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				52DCCE12B61B766DC3633C42B98E04DC /* Pods-YLT_SIP_Example */,
+				AEC304F77B1A8846B9B9D6D3AD45A0B2 /* Pods-YLT_SIP_Tests */,
+				871F741CB9146AF174C967DDA1D319DD /* YLT_SIP */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		30436E8A6D32B8809BF0145CBD252369 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				12016CB7DAB4526B02A3652B03B64153 /* YLT_SIP-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4423A4F90734908808999A313C01404A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5DD175235B875E67F1C390A377A2326 /* Pods-YLT_SIP_Tests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B1CA43A9B214960C5F74CED9E30330F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				64DCF08015B0B968BA9D2DA76E419871 /* Pods-YLT_SIP_Example-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		34E394B5CBEAB4326615BC267866F93B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = YLT_SIP;
+			target = 871F741CB9146AF174C967DDA1D319DD /* YLT_SIP */;
+			targetProxy = 41B82456162EBEDB666637F3776C4E8C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		12A572F967A5B8A6720DE7420CC58D9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1650CF42AF1E50BEDB70092E8604147B /* Pods-YLT_SIP_Tests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-YLT_SIP_Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-YLT_SIP_Tests/Pods-YLT_SIP_Tests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_YLT_SIP_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		13FDF6F290E68305D92FE8AE1C007B2C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E909472F749CB4B3443027EADA4446F9 /* Pods-YLT_SIP_Tests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-YLT_SIP_Tests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-YLT_SIP_Tests/Pods-YLT_SIP_Tests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_YLT_SIP_Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		264C95415382EE81C0C956CBA2D354E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B1C41A6C7B9814EAFE06E381BA2E931 /* Pods-YLT_SIP_Example.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-YLT_SIP_Example/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-YLT_SIP_Example/Pods-YLT_SIP_Example.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_YLT_SIP_Example;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		33DA7F43A1D2FA3C74A8C8FC246E1FA6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		380D2B5EF90F702F43E0F15E7C7921F6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F3841A235946670A99EC0DE16E55B7EC /* YLT_SIP.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/YLT_SIP/YLT_SIP-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/YLT_SIP/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/YLT_SIP/YLT_SIP.modulemap";
+				PRODUCT_NAME = YLT_SIP;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		5D3D58A2CFEB6D845D38C588CB3B8880 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F3841A235946670A99EC0DE16E55B7EC /* YLT_SIP.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/YLT_SIP/YLT_SIP-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/YLT_SIP/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/YLT_SIP/YLT_SIP.modulemap";
+				PRODUCT_NAME = YLT_SIP;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		731DC216E1A58545B559F6E0A2418060 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		A0AF0CA909BBF7EF0A0177672266C49E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6858680D26AFE23B81CDE9398ECC0877 /* Pods-YLT_SIP_Example.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-YLT_SIP_Example/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-YLT_SIP_Example/Pods-YLT_SIP_Example.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_YLT_SIP_Example;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				33DA7F43A1D2FA3C74A8C8FC246E1FA6 /* Debug */,
+				731DC216E1A58545B559F6E0A2418060 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		61836B416DFDEA4FF99AF2F3BCE8223A /* Build configuration list for PBXNativeTarget "Pods-YLT_SIP_Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				264C95415382EE81C0C956CBA2D354E9 /* Debug */,
+				A0AF0CA909BBF7EF0A0177672266C49E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A7E7B99F19320D9D9BFE2FA606283813 /* Build configuration list for PBXNativeTarget "YLT_SIP" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				380D2B5EF90F702F43E0F15E7C7921F6 /* Debug */,
+				5D3D58A2CFEB6D845D38C588CB3B8880 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C3412D1D0D82375A346CC3AB757AFD8C /* Build configuration list for PBXNativeTarget "Pods-YLT_SIP_Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				12A572F967A5B8A6720DE7420CC58D9D /* Debug */,
+				13FDF6F290E68305D92FE8AE1C007B2C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}

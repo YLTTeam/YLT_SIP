@@ -1,0 +1,6 @@
+framework module YLT_SIP {
+  umbrella header "YLT_SIP-umbrella.h"
+
+  export *
+  module * { export * }
+}
