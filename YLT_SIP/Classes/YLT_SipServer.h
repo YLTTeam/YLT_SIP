@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "YLT_SipUser.h"
 #import "YLT_SipSession.h"
-#import "sip_inv.h"
 
 typedef NS_ENUM(NSUInteger, SipStatus) {
     SIP_STATUS_NORMAL,//无任何状态
