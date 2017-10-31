@@ -9,6 +9,24 @@
 #import <Foundation/Foundation.h>
 #import "YLT_SipUser.h"
 #import "YLT_SipSession.h"
+#import "sip_inv.h"
+
+typedef NS_ENUM(NSUInteger, SipStatus) {
+    SIP_STATUS_NORMAL,//无任何状态
+    SIP_STATUS_CALLING,//拨打中
+    SIP_STATUS_INCOMING,//来电中
+    SIP_STATUS_EARLY,//响应了
+    SIP_STATUS_CONNECTING,//连接中
+    SIP_STATUS_CONFIRMED,//确认了
+    SIP_STATUS_DISCONNECTED,//断开了连接
+    
+    SIP_STATUS_CALL_FAILED,//呼叫失败
+    SIP_STATUS_ANSWER_FAILED,//应答失败
+    
+    SIP_STATUS_BUSYING,//忙线中
+};
+
+
 
 @interface YLT_SipServer : NSObject
 /**
@@ -20,6 +38,12 @@
  当前会话
  */
 @property (nonatomic, strong) YLT_SipSession *currentSession;
+
+/**
+ 回调
+ */
+@property (nonatomic, copy) void(^callback)(SipStatus status, NSDictionary *info);
+
 /**
  是否静音
  */

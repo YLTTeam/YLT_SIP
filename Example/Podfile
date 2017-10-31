@@ -1,5 +1,6 @@
-use_frameworks!
 
+
+platform :ios, '9.0'
 target 'YLT_SIP_Example' do
   pod 'YLT_SIP', :path => '../'
 

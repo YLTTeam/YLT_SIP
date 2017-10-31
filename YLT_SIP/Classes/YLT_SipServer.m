@@ -41,6 +41,9 @@ static void on_call_sdp_created(pjsua_call_id call_id,
     pjsua_call_id incoming_call_id;
 }
 
+/**
+ 注册的回调
+ */
 @property (nonatomic, copy) void(^registerCallback)(BOOL success);
 
 @end
@@ -193,6 +196,7 @@ static YLT_SipServer *sipShareData = nil;
             error_exit("退出失败", status);
             return NO;
         }
+        self.callback = NULL;
         return YES;
     }
     return YES;
@@ -208,6 +212,7 @@ static YLT_SipServer *sipShareData = nil;
     pj_status_t status = pjsua_call_make_call(_acc_id, &uri, 0, NULL, NULL, NULL);
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"呼叫失败");
+        self.callback(SIP_STATUS_CALL_FAILED, nil);
     }
 }
 
@@ -218,6 +223,7 @@ static YLT_SipServer *sipShareData = nil;
     pj_status_t status = pjsua_call_answer(incoming_call_id, 200, NULL, NULL);
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"应答失败");
+        self.callback(SIP_STATUS_ANSWER_FAILED, nil);
     }
 }
 
@@ -263,48 +269,20 @@ static YLT_SipServer *sipShareData = nil;
     }
 }
 
+- (void(^)(SipStatus status, NSDictionary *info))callback {
+    if (!_callback) {
+        _callback = ^(SipStatus status, NSDictionary *info) {
+        };
+    }
+    return _callback;
+}
+
 @end
 
-#pragma mark - c method
-/* 解密数据 */
-static int decrypt_aes(unsigned char* input, unsigned int input_len,
-                       unsigned char* output,  unsigned int outbuf_len,
-                       unsigned char* key, unsigned char *iv, int padding) {
-    int outlen, finallen, ret;
-    EVP_CIPHER_CTX ctx;
-    EVP_CIPHER_CTX_init(&ctx);
-    EVP_DecryptInit(&ctx, EVP_aes_128_cbc(), key, iv);
-    if (padding == 0)
-        EVP_CIPHER_CTX_set_padding(&ctx, padding);
-    if (!(ret = EVP_DecryptUpdate(&ctx, output, &outlen, input, input_len))) {
-        return 0;
-    }
-    if (!(ret = EVP_DecryptFinal(&ctx, output + outlen, &finallen))) {
-        return 0;
-    }
-    EVP_CIPHER_CTX_cleanup(&ctx);
-    return outlen + finallen;
-}
 
-/* 加密数据 */
-static int encrypt_aes(unsigned char* input, unsigned int input_len,
-                       unsigned char* output,  unsigned int outbuf_len,
-                       unsigned char* key, unsigned char *iv, int padding) {
-    int outlen, finallen;
-    EVP_CIPHER_CTX ctx;
-    EVP_CIPHER_CTX_init(&ctx);
-    EVP_EncryptInit(&ctx, EVP_aes_128_cbc(), key, iv);
-    if (padding == 0)
-        EVP_CIPHER_CTX_set_padding(&ctx, padding);
-    if (!EVP_EncryptUpdate(&ctx, output, &outlen, input, input_len)) {
-        return 0;
-    }
-    if (!EVP_EncryptFinal(&ctx, output + outlen, &finallen)) {
-        return 0;
-    }
-    EVP_CIPHER_CTX_cleanup(&ctx);
-    return outlen + finallen;
-}
+
+
+#pragma mark - c method
 
 /* 注册状态改变的回调 */
 static void on_reg_state2(pjsua_acc_id acc_id, pjsua_reg_info *info) {
@@ -335,18 +313,10 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
     if ([YLT_SipServer sharedInstance].currentSession.accountID == 0) {
         [YLT_SipServer sharedInstance].currentSession.accountID = call_id;
     } else {//当前通话处理占线状态
-        YLT_LogWarn(@"当前电话处于占线状态");
+        [YLT_SipServer sharedInstance].callback(SIP_STATUS_BUSYING, nil);
         return;
     }
-    
-    NSString *temp = [NSString stringWithUTF8String:ci.remote_info.ptr];
-    NSRange range  = [temp rangeOfString:@":"];
-    NSRange range2 = [temp rangeOfString:@"@"];
-    NSString *name = [temp substringWithRange:NSMakeRange(range.location + 1, range2.location-range.location-1)];
-#warning alex
-//    [[Tour_DialingView sharedDialingView] initWithDialType:1 withName:name];
-//    [[Tour_DialingView sharedDialingView] incoming];
-//    [[Tour_DialingView sharedDialingView] show];
+    [YLT_SipServer sharedInstance].callback(SIP_STATUS_INCOMING, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
 }
 
 /* 呼出状态改变的回调 */
@@ -354,23 +324,45 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e) {
     pjsua_call_info ci;
     PJ_UNUSED_ARG(e);
     pjsua_call_get_info(call_id, &ci);
-    if (ci.state == PJSIP_INV_STATE_INCOMING) {
-        [YLT_SipServer sharedInstance].currentSession.sessionType = YES;
-    }
-    if (ci.state == PJSIP_INV_STATE_CONFIRMED) {
-        [YLT_SipServer sharedInstance].currentSession.answer = YES;
-//        [[Tour_DialingView sharedDialingView] calling];
-    }
-    if ([YLT_SipServer sharedInstance].currentSession.state == PJSIP_INV_STATE_CALLING && ci.state == PJSIP_INV_STATE_DISCONNECTED) {
-        YLT_LogWarn(@"呼叫失败！");
-    }
-    if (ci.state == PJSIP_INV_STATE_DISCONNECTED) {
-        //保存通话记录并重制最新通话记录的数据
-        if ([YLT_SipServer sharedInstance].currentSession.state != PJSIP_INV_STATE_DISCONNECTED) {
-            [[YLT_SipServer sharedInstance].currentSession save];
+    switch (ci.state) {
+        case PJSIP_INV_STATE_INCOMING: {
+            [YLT_SipServer sharedInstance].currentSession.sessionType = SIP_SESSION_TYPE_ANSWER;
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_INCOMING, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
         }
-        [[YLT_SipServer sharedInstance].currentSession clear];
-//        [[Tour_DialingView sharedDialingView] remove];
+            break;
+        case PJSIP_INV_STATE_NULL:{
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_NORMAL, nil);
+        }
+            break;
+        case PJSIP_INV_STATE_CONFIRMED: {
+            [YLT_SipServer sharedInstance].currentSession.answer = YES;
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_CONFIRMED, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
+        }
+            break;
+        case PJSIP_INV_STATE_CALLING: {
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_CALLING, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
+        }
+            break;
+        case PJSIP_INV_STATE_EARLY: {
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_EARLY, nil);
+        }
+            break;
+        case PJSIP_INV_STATE_CONNECTING: {
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_CONNECTING, nil);
+        }
+            break;
+        case PJSIP_INV_STATE_DISCONNECTED: {
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_DISCONNECTED, nil);
+            if ([YLT_SipServer sharedInstance].currentSession.state == PJSIP_INV_STATE_CALLING) {
+                YLT_LogWarn(@"呼叫失败！");
+            }
+            //保存通话记录并重制最新通话记录的数据
+            if ([YLT_SipServer sharedInstance].currentSession.state != PJSIP_INV_STATE_DISCONNECTED) {
+                [[YLT_SipServer sharedInstance].currentSession save];
+            }
+            [[YLT_SipServer sharedInstance].currentSession clear];
+        }
+            break;
     }
     [YLT_SipServer sharedInstance].currentSession.state = ci.state;
 }
@@ -427,6 +419,45 @@ static void on_call_sdp_created(pjsua_call_id call_id,
 }
 
 
+/* 解密数据 */
+static int decrypt_aes(unsigned char* input, unsigned int input_len,
+                       unsigned char* output,  unsigned int outbuf_len,
+                       unsigned char* key, unsigned char *iv, int padding) {
+    int outlen, finallen, ret;
+    EVP_CIPHER_CTX ctx;
+    EVP_CIPHER_CTX_init(&ctx);
+    EVP_DecryptInit(&ctx, EVP_aes_128_cbc(), key, iv);
+    if (padding == 0)
+        EVP_CIPHER_CTX_set_padding(&ctx, padding);
+    if (!(ret = EVP_DecryptUpdate(&ctx, output, &outlen, input, input_len))) {
+        return 0;
+    }
+    if (!(ret = EVP_DecryptFinal(&ctx, output + outlen, &finallen))) {
+        return 0;
+    }
+    EVP_CIPHER_CTX_cleanup(&ctx);
+    return outlen + finallen;
+}
+
+/* 加密数据 */
+static int encrypt_aes(unsigned char* input, unsigned int input_len,
+                       unsigned char* output,  unsigned int outbuf_len,
+                       unsigned char* key, unsigned char *iv, int padding) {
+    int outlen, finallen;
+    EVP_CIPHER_CTX ctx;
+    EVP_CIPHER_CTX_init(&ctx);
+    EVP_EncryptInit(&ctx, EVP_aes_128_cbc(), key, iv);
+    if (padding == 0)
+        EVP_CIPHER_CTX_set_padding(&ctx, padding);
+    if (!EVP_EncryptUpdate(&ctx, output, &outlen, input, input_len)) {
+        return 0;
+    }
+    if (!EVP_EncryptFinal(&ctx, output + outlen, &finallen)) {
+        return 0;
+    }
+    EVP_CIPHER_CTX_cleanup(&ctx);
+    return outlen + finallen;
+}
 
 
 

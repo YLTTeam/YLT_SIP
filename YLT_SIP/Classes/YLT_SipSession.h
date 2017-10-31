@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <pjlib/pjlib.h>
+#import <pjsua.h>
 #import <YLT_BaseLib/YLT_BaseLib.h>
 
 typedef NS_ENUM(NSUInteger, SipSessionType) {

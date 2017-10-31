@@ -7,7 +7,7 @@
 //
 
 #import "YLT_SipModular.h"
-//#import "YLT_Sip.h"
+#import "YLT_SipServer.h"
 
 @implementation YLT_SipModular
 NS_ASSUME_NONNULL_BEGIN
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wstrict-prototypes"
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  //  [[YLT_Sip sharedInstance] autoLogin];
+    [[YLT_SipServer sharedInstance] autoLogin];
     return YES;
 }
 
