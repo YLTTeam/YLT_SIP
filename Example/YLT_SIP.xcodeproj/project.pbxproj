@@ -251,7 +251,7 @@
 				ORGANIZATIONNAME = xphaijj;
 				TargetAttributes = {
 					6003F589195388D20070C39A = {
-						DevelopmentTeam = 4GZR2TYHP5;
+						DevelopmentTeam = UZGK9HUE57;
 					};
 					6003F5AD195388D20070C39A = {
 						TestTargetID = 6003F589195388D20070C39A;
@@ -537,7 +537,7 @@
 			baseConfigurationReference = 4CA5E2D35F10754F6A727635 /* Pods-YLT_SIP_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4GZR2TYHP5;
+				DEVELOPMENT_TEAM = UZGK9HUE57;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YLT_SIP/YLT_SIP-Prefix.pch";
@@ -557,7 +557,7 @@
 			baseConfigurationReference = 4487A00E3BCFE646CBA67B96 /* Pods-YLT_SIP_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 4GZR2TYHP5;
+				DEVELOPMENT_TEAM = UZGK9HUE57;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YLT_SIP/YLT_SIP-Prefix.pch";
