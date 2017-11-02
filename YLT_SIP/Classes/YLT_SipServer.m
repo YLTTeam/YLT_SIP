@@ -145,12 +145,9 @@ static YLT_SipServer *sipShareData = nil;
     //配置账号
     pjsua_acc_config acc_cfg;
     pjsua_acc_config_default(&acc_cfg);
-    // Account ID
-    char sipId[MAX_SIP_ID_LENGTH];
-    acc_cfg.id = pj_str(sipId);
-    // Reg URI
-    char regUri[MAX_SIP_REG_URI_LENGTH];
-    acc_cfg.reg_uri = pj_str(regUri);
+
+    acc_cfg.id = pj_str((char *)[NSString stringWithFormat:@"sip:%@@%@", username, server].UTF8String);
+    acc_cfg.reg_uri = pj_str((char *)[NSString stringWithFormat:@"sip:%@", server].UTF8String);
     // Account cred info
     acc_cfg.cred_count = 1;
     acc_cfg.cred_info[0].scheme = pj_str("digest");
@@ -230,7 +227,7 @@ static YLT_SipServer *sipShareData = nil;
 /**
  挂断
  */
-- (void)endCall {
+- (void)hangUp {
     pjsua_call_hangup_all();
 }
 

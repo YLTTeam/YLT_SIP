@@ -88,7 +88,7 @@ typedef NS_ENUM(NSUInteger, SipStatus) {
 /**
  挂断
  */
-- (void)endCall;
+- (void)hangUp;
 
 /**
  保持活跃
