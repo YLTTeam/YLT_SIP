@@ -5,7 +5,7 @@ PODS:
   - YLT_BaseLib (0.0.4):
     - MJExtension (~> 3.0.13)
   - YLT_PJSip (0.0.4)
-  - YLT_SIP (0.0.1):
+  - YLT_SIP (0.0.3):
     - OpenSSL
     - ReactiveObjC
     - YLT_BaseLib
@@ -24,7 +24,7 @@ SPEC CHECKSUMS:
   ReactiveObjC: ce79989e8684b9086b5f8d0c74bc7b81a8729c9e
   YLT_BaseLib: 1ec42caab54e4574bcbb5eaff4933577dfd8f2eb
   YLT_PJSip: 1a4fdd32603cf049a11a3eee54c1d472917826f9
-  YLT_SIP: 99ffde608260d309491bf6a6a7ff687e57303b26
+  YLT_SIP: 78eb8e38858c83aeb990aa6d213ee0a41b3a01e9
 
 PODFILE CHECKSUM: 08f8d8142d450dfa3ce43e1e8372064b592e219b
 

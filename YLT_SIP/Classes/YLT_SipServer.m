@@ -159,7 +159,7 @@ static YLT_SipServer *sipShareData = nil;
         YLT_LogError(@"添加创建账户失败");
         return NO;
     }
-    self.currentUser.accountId = _acc_id;
+    self.currentUser.accId = _acc_id;
     self.currentUser.username = username;
     self.currentUser.password = password;
     self.currentUser.domain = server;
@@ -187,8 +187,8 @@ static YLT_SipServer *sipShareData = nil;
  退出登录
  */
 - (BOOL)logout {
-    if (pjsua_acc_is_valid(self.currentUser.accountId)) {
-        pj_status_t status = pjsua_acc_del(self.currentUser.accountId);
+    if (pjsua_acc_is_valid(self.currentUser.accId)) {
+        pj_status_t status = pjsua_acc_del(self.currentUser.accId);
         if (status != PJ_SUCCESS) {
             error_exit("退出失败", status);
             return NO;
@@ -207,7 +207,7 @@ static YLT_SipServer *sipShareData = nil;
 - (void)makeCallTo:(NSString *)destPhone {
     NSString *destURI = [NSString stringWithFormat:@"sip:%@@%@", destPhone, self.currentUser.domain];
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
-    pj_status_t status = pjsua_call_make_call(self.currentUser.accountId, &uri, 0, NULL, NULL, NULL);
+    pj_status_t status = pjsua_call_make_call(self.currentUser.accId, &uri, 0, NULL, NULL, NULL);
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"呼叫失败  %zd", status);
         self.callback(SIP_STATUS_CALL_FAILED, nil);
@@ -218,7 +218,7 @@ static YLT_SipServer *sipShareData = nil;
  应答
  */
 - (void)answerCall {
-    pj_status_t status = pjsua_call_answer(self.currentSession.accountID, 200, NULL, NULL);
+    pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, NULL, NULL);
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"应答失败");
         self.callback(SIP_STATUS_ANSWER_FAILED, nil);
@@ -308,8 +308,8 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
     PJ_LOG(3,(THIS_FILE, "Incoming call from %.*s!!",
               (int)ci.remote_info.slen,
               ci.remote_info.ptr));
-    if ([YLT_SipServer sharedInstance].currentSession.accountID == 0) {
-        [YLT_SipServer sharedInstance].currentSession.accountID = call_id;
+    if ([YLT_SipServer sharedInstance].currentSession.callId == 0) {
+        [YLT_SipServer sharedInstance].currentSession.callId = call_id;
     } else {//当前通话处理占线状态
         [YLT_SipServer sharedInstance].callback(SIP_STATUS_BUSYING, nil);
         return;
