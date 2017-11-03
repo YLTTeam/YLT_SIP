@@ -36,7 +36,7 @@
 /**
  通话的ID
  */
-@property (nonatomic, assign) pjsua_acc_id accountId;
+@property (nonatomic, assign) pjsua_acc_id accId;
 
 /**
  清除用户信息
@@ -45,7 +45,7 @@
 
 /**
  校验用户信息的有效性
-
+ 
  @return 是否有效 YES:有效 NO:无效
  */
 - (BOOL)check;

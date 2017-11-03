@@ -17,7 +17,7 @@
     self.answer = NO;
     self.sessionType = SIP_SESSION_TYPE_NONE;
     self.contactId = @"";
-    self.accountID = 0;
+    self.callId = 0;
     self.name = @"";
     self.company = @"";
     self.section = @"";
@@ -28,3 +28,4 @@
 }
 
 @end
+

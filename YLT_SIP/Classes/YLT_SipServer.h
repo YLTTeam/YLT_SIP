@@ -52,7 +52,7 @@ typedef NS_ENUM(NSUInteger, SipStatus) {
 
 /**
  注册Sip服务
-
+ 
  @param server 服务器域名
  @param username 用户名
  @param password 密码
@@ -68,17 +68,17 @@ typedef NS_ENUM(NSUInteger, SipStatus) {
 
 /**
  退出登录
-
+ 
  @return 是否退出成功
  */
 - (BOOL)logout;
 
 /**
  拨打电话
-
- @param destURI 目标URI
+ 
+ @param destPhone 目标电话
  */
-- (void)makeCallTo:(NSString *)destURI;
+- (void)makeCallTo:(NSString *)destPhone;
 
 /**
  应答
@@ -96,3 +96,4 @@ typedef NS_ENUM(NSUInteger, SipStatus) {
 - (void)keepAlive;
 
 @end
+

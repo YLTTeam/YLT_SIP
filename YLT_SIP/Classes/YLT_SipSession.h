@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, SipSessionType) {
 /**
  通话ID
  */
-@property (nonatomic, assign) pjsua_acc_id accountID;
+@property (nonatomic, assign) pjsua_call_id callId;
 
 /**
  会话名字
@@ -87,3 +87,4 @@ typedef NS_ENUM(NSUInteger, SipSessionType) {
 - (void)clear;
 
 @end
+

@@ -37,8 +37,6 @@ static void on_call_sdp_created(pjsua_call_id call_id,
                                 const pjmedia_sdp_session *rem_sdp);
 
 @interface YLT_SipServer () {
-    pjsua_acc_id _acc_id;
-    pjsua_call_id incoming_call_id;
 }
 
 /**
@@ -102,7 +100,7 @@ static YLT_SipServer *sipShareData = nil;
     cfg.cb.on_call_state = &on_call_state;
     cfg.cb.on_reg_state2 = &on_reg_state2;
     cfg.cb.on_call_sdp_created = &on_call_sdp_created;
-
+    
     pjsua_logging_config log_cfg;
     pjsua_logging_config_default(&log_cfg);
     log_cfg.console_level = 4;
@@ -145,7 +143,7 @@ static YLT_SipServer *sipShareData = nil;
     //配置账号
     pjsua_acc_config acc_cfg;
     pjsua_acc_config_default(&acc_cfg);
-
+    
     acc_cfg.id = pj_str((char *)[NSString stringWithFormat:@"sip:%@@%@", username, server].UTF8String);
     acc_cfg.reg_uri = pj_str((char *)[NSString stringWithFormat:@"sip:%@", server].UTF8String);
     // Account cred info
@@ -155,11 +153,13 @@ static YLT_SipServer *sipShareData = nil;
     acc_cfg.cred_info[0].username = pj_str((char *)[username UTF8String]);
     acc_cfg.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
     acc_cfg.cred_info[0].data = pj_str((char *)[password UTF8String]);
+    pjsua_acc_id _acc_id;
     status = pjsua_acc_add(&acc_cfg, PJ_TRUE, &_acc_id);
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"添加创建账户失败");
         return NO;
     }
+    self.currentUser.accountId = _acc_id;
     self.currentUser.username = username;
     self.currentUser.password = password;
     self.currentUser.domain = server;
@@ -187,8 +187,8 @@ static YLT_SipServer *sipShareData = nil;
  退出登录
  */
 - (BOOL)logout {
-    if (pjsua_acc_is_valid(_acc_id)) {
-        pj_status_t status = pjsua_acc_del(_acc_id);
+    if (pjsua_acc_is_valid(self.currentUser.accountId)) {
+        pj_status_t status = pjsua_acc_del(self.currentUser.accountId);
         if (status != PJ_SUCCESS) {
             error_exit("退出失败", status);
             return NO;
@@ -202,13 +202,14 @@ static YLT_SipServer *sipShareData = nil;
 /**
  拨打电话
  
- @param destURI 目标URI
+ @param destPhone 目标电话
  */
-- (void)makeCallTo:(NSString *)destURI {
+- (void)makeCallTo:(NSString *)destPhone {
+    NSString *destURI = [NSString stringWithFormat:@"sip:%@@%@", destPhone, self.currentUser.domain];
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
-    pj_status_t status = pjsua_call_make_call(_acc_id, &uri, 0, NULL, NULL, NULL);
+    pj_status_t status = pjsua_call_make_call(self.currentUser.accountId, &uri, 0, NULL, NULL, NULL);
     if (status != PJ_SUCCESS) {
-        YLT_LogError(@"呼叫失败");
+        YLT_LogError(@"呼叫失败  %zd", status);
         self.callback(SIP_STATUS_CALL_FAILED, nil);
     }
 }
@@ -217,7 +218,7 @@ static YLT_SipServer *sipShareData = nil;
  应答
  */
 - (void)answerCall {
-    pj_status_t status = pjsua_call_answer(incoming_call_id, 200, NULL, NULL);
+    pj_status_t status = pjsua_call_answer(self.currentSession.accountID, 200, NULL, NULL);
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"应答失败");
         self.callback(SIP_STATUS_ANSWER_FAILED, nil);
@@ -402,7 +403,7 @@ static void on_call_sdp_created(pjsua_call_id call_id,
             }
         }
         NSInteger keyIndex = 0;//获取到索引  将索引保存起来  等到需要解密的时候使用
-//        pjmedia_set_key(keys, 1);
+        //        pjmedia_set_key(keys, 1);
     } else {//发送方  下面传输加密密钥索引
         //获取到需要使用的加密密钥的索引  然后放到 0807060504030201 字段部分 进行传输
         for (int i = 0; i < sdp->media_count; i++) {
@@ -411,7 +412,7 @@ static void on_call_sdp_created(pjsua_call_id call_id,
             pjmedia_sdp_attr* key = pjmedia_sdp_attr_create(pool, "k", &value);
             pjmedia_sdp_media_add_attr(media, key);
         }
-//        pjmedia_set_key(keys, 1*16);
+        //        pjmedia_set_key(keys, 1*16);
     }
 }
 

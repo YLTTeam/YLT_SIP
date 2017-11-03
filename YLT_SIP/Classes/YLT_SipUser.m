@@ -19,7 +19,7 @@
     self.username = @"";
     self.domain = @"";
     self.password = @"";
-    self.accountId = 0;
+    self.accId = 0;
 }
 
 /**
