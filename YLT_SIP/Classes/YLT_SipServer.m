@@ -352,7 +352,7 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e) {
         case PJSIP_INV_STATE_DISCONNECTED: {
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_DISCONNECTED, nil);
             if ([YLT_SipServer sharedInstance].currentSession.state == PJSIP_INV_STATE_CALLING) {
-                YLT_LogWarn(@"呼叫失败！");
+                printf("呼叫失败！");
             }
             //保存通话记录并重制最新通话记录的数据
             if ([YLT_SipServer sharedInstance].currentSession.state != PJSIP_INV_STATE_DISCONNECTED) {
@@ -372,7 +372,7 @@ static void on_call_media_state(pjsua_call_id call_id) {
     if (ci.media_status == PJSUA_CALL_MEDIA_ACTIVE) {
         pjsua_conf_connect(ci.conf_slot, 0);
         pjsua_conf_connect(0, ci.conf_slot);
-        YLT_LogWarn(@"会话成功，创建语音设备连接");
+        printf("会话成功，创建语音设备连接");
     }
 }
 
