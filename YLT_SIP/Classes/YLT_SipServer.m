@@ -207,11 +207,17 @@ static YLT_SipServer *sipShareData = nil;
 - (void)makeCallTo:(NSString *)destPhone {
     NSString *destURI = [NSString stringWithFormat:@"sip:%@@%@", destPhone, self.currentUser.domain];
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
-    pj_status_t status = pjsua_call_make_call(self.currentUser.accId, &uri, 0, NULL, NULL, NULL);
+    pjsua_call_id callId = 0;
+    pj_status_t status = pjsua_call_make_call(self.currentUser.accId, &uri, 0, NULL, NULL, &callId);
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"呼叫失败  %zd", status);
         self.callback(SIP_STATUS_CALL_FAILED, nil);
     }
+    self.currentSession.phone = destURI;
+    self.currentSession.sessionType = 1;
+    self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
+    self.currentSession.callId = callId;
+    self.currentSession.state = status;
 }
 
 /**
@@ -223,6 +229,9 @@ static YLT_SipServer *sipShareData = nil;
         YLT_LogError(@"应答失败");
         self.callback(SIP_STATUS_ANSWER_FAILED, nil);
     }
+    self.currentSession.sessionType = 0;
+    self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
+    self.currentSession.state = status;
 }
 
 /**
@@ -270,6 +279,7 @@ static YLT_SipServer *sipShareData = nil;
 - (void(^)(SipStatus status, NSDictionary *info))callback {
     if (!_callback) {
         _callback = ^(SipStatus status, NSDictionary *info) {
+            NSLog(@"%@", info);
         };
     }
     return _callback;
@@ -298,30 +308,7 @@ static void on_reg_state2(pjsua_acc_id acc_id, pjsua_reg_info *info) {
     }
 }
 
-/* 收到呼入电话的回调 */
-static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
-                             pjsip_rx_data *rdata) {
-    pjsua_call_info ci;
-    PJ_UNUSED_ARG(acc_id);
-    PJ_UNUSED_ARG(rdata);
-    pjsua_call_get_info(call_id, &ci);
-    PJ_LOG(3,(THIS_FILE, "Incoming call from %.*s!!",
-              (int)ci.remote_info.slen,
-              ci.remote_info.ptr));
-    if ([YLT_SipServer sharedInstance].currentSession.callId == 0) {
-        [YLT_SipServer sharedInstance].currentSession.callId = call_id;
-    } else {//当前通话处理占线状态
-        [YLT_SipServer sharedInstance].callback(SIP_STATUS_BUSYING, nil);
-        return;
-    }
-    [YLT_SipServer sharedInstance].callback(SIP_STATUS_INCOMING, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
-}
-
-/* 呼出状态改变的回调 */
-static void on_call_state(pjsua_call_id call_id, pjsip_event *e) {
-    pjsua_call_info ci;
-    PJ_UNUSED_ARG(e);
-    pjsua_call_get_info(call_id, &ci);
+static void call_status_chage(pjsua_call_info ci) {
     switch (ci.state) {
         case PJSIP_INV_STATE_INCOMING: {
             [YLT_SipServer sharedInstance].currentSession.sessionType = SIP_SESSION_TYPE_ANSWER;
@@ -356,13 +343,42 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e) {
             }
             //保存通话记录并重制最新通话记录的数据
             if ([YLT_SipServer sharedInstance].currentSession.state != PJSIP_INV_STATE_DISCONNECTED) {
-                [[YLT_SipServer sharedInstance].currentSession save];
+                [[YLT_SipServer sharedInstance].currentSession saveCallback:^(BOOL success, id response) {
+                }];
             }
             [[YLT_SipServer sharedInstance].currentSession clear];
         }
             break;
     }
     [YLT_SipServer sharedInstance].currentSession.state = ci.state;
+}
+
+/* 收到呼入电话的回调 */
+static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
+                             pjsip_rx_data *rdata) {
+    pjsua_call_info ci;
+    PJ_UNUSED_ARG(acc_id);
+    PJ_UNUSED_ARG(rdata);
+    pjsua_call_get_info(call_id, &ci);
+    PJ_LOG(3,(THIS_FILE, "Incoming call from %.*s!!",
+              (int)ci.remote_info.slen,
+              ci.remote_info.ptr));
+    if ([YLT_SipServer sharedInstance].currentSession.callId == 0) {
+        [YLT_SipServer sharedInstance].currentSession.callId = call_id;
+    } else {//当前通话处理占线状态
+        [YLT_SipServer sharedInstance].callback(SIP_STATUS_BUSYING, nil);
+        return;
+    }
+    [YLT_SipServer sharedInstance].currentSession.phone = [NSString stringWithUTF8String:ci.remote_info.ptr];
+    [YLT_SipServer sharedInstance].callback(SIP_STATUS_INCOMING, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
+}
+
+/* 呼出状态改变的回调 */
+static void on_call_state(pjsua_call_id call_id, pjsip_event *e) {
+    pjsua_call_info ci;
+    PJ_UNUSED_ARG(e);
+    pjsua_call_get_info(call_id, &ci);
+    call_status_chage(ci);
 }
 
 /* 会话时media状态改变的回调 */

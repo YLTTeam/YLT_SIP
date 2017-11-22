@@ -1,11 +1,15 @@
 PODS:
+  - FMDB (2.7.2):
+    - FMDB/standard (= 2.7.2)
+  - FMDB/standard (2.7.2)
   - MJExtension (3.0.13)
   - OpenSSL (1.0.210)
   - ReactiveObjC (3.0.0)
-  - YLT_BaseLib (0.0.4):
+  - YLT_BaseLib (0.0.21):
+    - FMDB
     - MJExtension (~> 3.0.13)
   - YLT_PJSip (0.0.4)
-  - YLT_SIP (0.0.3):
+  - YLT_SIP (0.0.4):
     - OpenSSL
     - ReactiveObjC
     - YLT_BaseLib
@@ -19,12 +23,13 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
+  FMDB: 6198a90e7b6900cfc046e6bc0ef6ebb7be9236aa
   MJExtension: 5932755f451458eefa24239358817f8d291240c7
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   ReactiveObjC: ce79989e8684b9086b5f8d0c74bc7b81a8729c9e
-  YLT_BaseLib: 1ec42caab54e4574bcbb5eaff4933577dfd8f2eb
+  YLT_BaseLib: cbe7b84a8281d6d2929fe4e4d58558e0a07ab131
   YLT_PJSip: 1a4fdd32603cf049a11a3eee54c1d472917826f9
-  YLT_SIP: 78eb8e38858c83aeb990aa6d213ee0a41b3a01e9
+  YLT_SIP: 610642564363799cbe094478cb7a86e87b9803b7
 
 PODFILE CHECKSUM: 08f8d8142d450dfa3ce43e1e8372064b592e219b
 
