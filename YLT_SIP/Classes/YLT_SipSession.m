@@ -172,7 +172,7 @@
  */
 - (void)clear {
     self.answer = NO;
-    self.sessionType = SIP_SESSION_TYPE_NONE;
+    self.sessionType = 0;
     self.callId = 0;
     self.phone = @"";
     self.sessionType = 0;

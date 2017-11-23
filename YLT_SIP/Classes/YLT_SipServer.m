@@ -311,7 +311,8 @@ static void on_reg_state2(pjsua_acc_id acc_id, pjsua_reg_info *info) {
 static void call_status_chage(pjsua_call_info ci) {
     switch (ci.state) {
         case PJSIP_INV_STATE_INCOMING: {
-            [YLT_SipServer sharedInstance].currentSession.sessionType = SIP_SESSION_TYPE_ANSWER;
+            [YLT_SipServer sharedInstance].currentSession.sessionType = 0;
+            [YLT_SipServer sharedInstance].currentSession.startTime = [[NSDate date] timeIntervalSince1970];
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_INCOMING, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
         }
             break;
@@ -321,10 +322,13 @@ static void call_status_chage(pjsua_call_info ci) {
             break;
         case PJSIP_INV_STATE_CONFIRMED: {
             [YLT_SipServer sharedInstance].currentSession.answer = YES;
+            [YLT_SipServer sharedInstance].currentSession.startTime = [[NSDate date] timeIntervalSince1970];//接听了就更新一下起始时间
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_CONFIRMED, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
         }
             break;
         case PJSIP_INV_STATE_CALLING: {
+            [YLT_SipServer sharedInstance].currentSession.sessionType = 1;
+            [YLT_SipServer sharedInstance].currentSession.startTime = [[NSDate date] timeIntervalSince1970];
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_CALLING, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
         }
             break;
@@ -341,6 +345,7 @@ static void call_status_chage(pjsua_call_info ci) {
             if ([YLT_SipServer sharedInstance].currentSession.state == PJSIP_INV_STATE_CALLING) {
                 printf("呼叫失败！");
             }
+            [YLT_SipServer sharedInstance].currentSession.endTime = [[NSDate date] timeIntervalSince1970];
             //保存通话记录并重制最新通话记录的数据
             if ([YLT_SipServer sharedInstance].currentSession.state != PJSIP_INV_STATE_DISCONNECTED) {
                 [[YLT_SipServer sharedInstance].currentSession saveCallback:^(BOOL success, id response) {

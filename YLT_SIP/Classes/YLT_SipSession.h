@@ -10,12 +10,6 @@
 #import <pjsua.h>
 #import <YLT_BaseLib/YLT_BaseLib.h>
 
-typedef NS_ENUM(NSUInteger, SipSessionType) {
-    SIP_SESSION_TYPE_CALL = 100,//拨打方
-    SIP_SESSION_TYPE_ANSWER,//接收方
-    SIP_SESSION_TYPE_NONE,//未知状态
-};
-
 /**
  当前会话对象
  */
