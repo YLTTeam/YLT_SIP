@@ -209,15 +209,16 @@ static YLT_SipServer *sipShareData = nil;
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
     pjsua_call_id callId = 0;
     pj_status_t status = pjsua_call_make_call(self.currentUser.accId, &uri, 0, NULL, NULL, &callId);
-    if (status != PJ_SUCCESS) {
-        YLT_LogError(@"呼叫失败  %zd", status);
-        self.callback(SIP_STATUS_CALL_FAILED, nil);
-    }
     self.currentSession.phone = destURI;
     self.currentSession.sessionType = 1;
     self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
     self.currentSession.callId = callId;
     self.currentSession.state = status;
+    if (status != PJ_SUCCESS) {
+        YLT_LogError(@"呼叫失败  %zd", status);
+        self.callback(SIP_STATUS_CALL_FAILED, nil);
+        [self save];
+    }
 }
 
 /**
@@ -225,13 +226,15 @@ static YLT_SipServer *sipShareData = nil;
  */
 - (void)answerCall {
     pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, NULL, NULL);
-    if (status != PJ_SUCCESS) {
-        YLT_LogError(@"应答失败");
-        self.callback(SIP_STATUS_ANSWER_FAILED, nil);
-    }
     self.currentSession.sessionType = 0;
     self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
     self.currentSession.state = status;
+    if (status != PJ_SUCCESS) {
+        YLT_LogError(@"应答失败");
+        [self save];
+        self.callback(SIP_STATUS_ANSWER_FAILED, nil);
+    }
+    
 }
 
 /**
@@ -283,6 +286,13 @@ static YLT_SipServer *sipShareData = nil;
         };
     }
     return _callback;
+}
+
+- (void)save {
+    [YLT_SipServer sharedInstance].currentSession.endTime = [[NSDate date] timeIntervalSince1970];
+    [[YLT_SipServer sharedInstance].currentSession saveCallback:^(BOOL success, id response) {
+    }];
+    [[YLT_SipServer sharedInstance].currentSession clear];
 }
 
 @end
@@ -345,13 +355,10 @@ static void call_status_chage(pjsua_call_info ci) {
             if ([YLT_SipServer sharedInstance].currentSession.state == PJSIP_INV_STATE_CALLING) {
                 printf("呼叫失败！");
             }
-            [YLT_SipServer sharedInstance].currentSession.endTime = [[NSDate date] timeIntervalSince1970];
             //保存通话记录并重制最新通话记录的数据
             if ([YLT_SipServer sharedInstance].currentSession.state != PJSIP_INV_STATE_DISCONNECTED) {
-                [[YLT_SipServer sharedInstance].currentSession saveCallback:^(BOOL success, id response) {
-                }];
             }
-            [[YLT_SipServer sharedInstance].currentSession clear];
+            [[YLT_SipServer sharedInstance] save];
         }
             break;
     }
@@ -372,6 +379,7 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
         [YLT_SipServer sharedInstance].currentSession.callId = call_id;
     } else {//当前通话处理占线状态
         [YLT_SipServer sharedInstance].callback(SIP_STATUS_BUSYING, nil);
+        [[YLT_SipServer sharedInstance] save];
         return;
     }
     [YLT_SipServer sharedInstance].currentSession.phone = [NSString stringWithUTF8String:ci.remote_info.ptr];
