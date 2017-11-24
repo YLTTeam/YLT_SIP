@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark + PKPushRegistryDelegate
 
-+ (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
+- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
     if([credentials.token length] == 0) {
         return;
     }
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
     BOOL isCalling = false;
     switch ([UIApplication sharedApplication].applicationState) {
         case UIApplicationStateActive: {
@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (void)onCancelRing {
+- (void)onCancelRing {
     //取消通知栏
     NSMutableArray *arraylist = [[NSMutableArray alloc] init];
     [arraylist addObject:@"Voip_Push"];
