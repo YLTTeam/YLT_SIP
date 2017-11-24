@@ -8,42 +8,26 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <YLT_BaseLib/YLT_BaseLib.h>
 
-@interface YLT_SipModular : NSObject
-NS_ASSUME_NONNULL_BEGIN
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wstrict-prototypes"
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
+#define YLT_SIPBundle [NSBundle bundleWithURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"YLT_Faceboard" withExtension:@"bundle"]]
+#define YLT_SIPImage(name) [UIImage imageNamed:name inBundle:YLT_FaceboardBundle compatibleWithTraitCollection:nil]
 
-- (void)applicationDidBecomeActive:(UIApplication *)application;
+@interface YLT_SipModular : YLT_BaseModular
 
-- (void)applicationWillResignActive:(UIApplication *)application;
+/**
+ 提示音
+ */
+@property (nonatomic, strong) NSString *soundName;
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
+/**
+ 获取token的回调
+ */
+@property (nonatomic, copy) void(^tokenCallback)(NSString *token);
 
-- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application;
+/**
+ 提示内容的回调
+ */
+@property (nonatomic, copy) NSString *(^tipCallback)(NSDictionary *payload);
 
-- (void)applicationWillTerminate:(UIApplication *)application;
-
-- (void)applicationSignificantTimeChange:(UIApplication *)application;
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
-
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
-
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo;
-
-- (void)application:(UIApplication *)application handleActionWithIdentifier:(nullable NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void(^)())completionHandler;;
-
-- (void)application:(UIApplication *)application handleActionWithIdentifier:(nullable NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void(^)())completionHandler;
-
-- (void)application:(UIApplication *)application handleActionWithIdentifier:(nullable NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void(^)())completionHandler;
-
-- (void)application:(UIApplication *)application handleActionWithIdentifier:(nullable NSString *)identifier forLocalNotification:(UILocalNotification *)notification withResponseInfo:(NSDictionary *)responseInfo completionHandler:(void(^)())completionHandler;
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler;
-#pragma clang diagnostic pop
-NS_ASSUME_NONNULL_END
 @end

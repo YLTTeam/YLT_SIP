@@ -390,9 +390,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-YLT_SIP_Example/Pods-YLT_SIP_Example-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/YLT_SIP/YLT_SIP.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

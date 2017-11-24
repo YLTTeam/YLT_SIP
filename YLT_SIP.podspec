@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'YLT_SIP'
-  s.version          = '0.0.6'
+  s.version          = '0.0.7'
   s.summary          = 'A short description of YLT_SIP.'
 
 
@@ -17,7 +17,11 @@ TODO: Add long description of the pod here.
   s.ios.deployment_target = '9.0'
 
   s.source_files = 'YLT_SIP/Classes/**/*'
-  
+  s.resource_bundles = {
+    'YLT_SIP' => ['YLT_SIP/Assets/*.png', 'YLT_SIP/Assets/*.caf']
+  }
+
+
   s.dependency 'YLT_PJSip'
   s.dependency 'YLT_BaseLib'
   s.dependency 'OpenSSL'
