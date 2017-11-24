@@ -34,14 +34,14 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wstrict-prototypes"
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions {
++ (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [[YLT_SipServer sharedInstance] autoLogin];
     PKPushRegistry *pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-    pushRegistry.delegate = self;
+    pushRegistry.delegate = [YLT_SipModular shareInstance];
     pushRegistry.desiredPushTypes = [NSSet setWithObjects:PKPushTypeVoIP, nil];
     if (@available(iOS 10.0, *)) {
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-        [center requestAuthorizationWithOptions:(UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError * _Nullable error) {
+        [center requestAuthorizationWithOptions:(UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError *error) {
             if (!error) {
                 YLT_Log(@"request authorization succeeded!");
             }
@@ -55,9 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-#pragma mark - PKPushRegistryDelegate
+#pragma mark + PKPushRegistryDelegate
 
-- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
++ (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
     if([credentials.token length] == 0) {
         return;
     }
@@ -66,12 +66,12 @@ NS_ASSUME_NONNULL_BEGIN
                         stringByReplacingOccurrencesOfString:@">" withString:@""]
                        stringByReplacingOccurrencesOfString:@" " withString:@""];
     //token上传服务器
-    if (self.tokenCallback) {
-        self.tokenCallback(token);
+    if ([YLT_SipModular shareInstance].tokenCallback) {
+        [YLT_SipModular shareInstance].tokenCallback(token);
     }
 }
 
-- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
++ (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
     BOOL isCalling = false;
     switch ([UIApplication sharedApplication].applicationState) {
         case UIApplicationStateActive: {
@@ -93,39 +93,39 @@ NS_ASSUME_NONNULL_BEGIN
     
     if (isCalling){
         NSString *tips = @"邀请您进行加密通话...";
-        if (self.tipCallback) {
-            tips = self.tipCallback(payload.dictionaryPayload);
+        if ([YLT_SipModular shareInstance].tipCallback) {
+            tips = [YLT_SipModular shareInstance].tipCallback(payload.dictionaryPayload);
         }
         //本地通知，实现响铃效果
         if (@available(iOS 10.0, *)) {
             UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
             UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
             content.body = [NSString localizedUserNotificationStringForKey:tips arguments:nil];;
-            UNNotificationSound *customSound = [UNNotificationSound soundNamed:[self.soundName YLT_CheckString]?self.soundName:@"YLT_SIP/voip_call.caf"];
+            UNNotificationSound *customSound = [UNNotificationSound soundNamed:[[YLT_SipModular shareInstance].soundName YLT_CheckString]?[YLT_SipModular shareInstance].soundName:@"YLT_SIP/voip_call.caf"];
             content.sound = customSound;
             UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger
                                                           triggerWithTimeInterval:1 repeats:NO];
-            self.request = [UNNotificationRequest requestWithIdentifier:@"Voip_Push" content:content trigger:trigger];
-            [center addNotificationRequest:self.request withCompletionHandler:^(NSError * _Nullable error) {
+            [YLT_SipModular shareInstance].request = [UNNotificationRequest requestWithIdentifier:@"Voip_Push" content:content trigger:trigger];
+            [center addNotificationRequest:[YLT_SipModular shareInstance].request withCompletionHandler:^(NSError *error) {
             }];
         } else {
-            self.callNotification = [[UILocalNotification alloc] init];
-            self.callNotification.alertBody = tips;
+            [YLT_SipModular shareInstance].callNotification = [[UILocalNotification alloc] init];
+            [YLT_SipModular shareInstance].callNotification.alertBody = tips;
             
-            self.callNotification.soundName = [self.soundName YLT_CheckString]?self.soundName:@"YLT_SIP/voip_call.caf";
-            [[UIApplication sharedApplication] presentLocalNotificationNow:self.callNotification];
+            [YLT_SipModular shareInstance].callNotification.soundName = [[YLT_SipModular shareInstance].soundName YLT_CheckString]?[YLT_SipModular shareInstance].soundName:@"YLT_SIP/voip_call.caf";
+            [[UIApplication sharedApplication] presentLocalNotificationNow:[YLT_SipModular shareInstance].callNotification];
         }
     }
 }
 
-- (void)onCancelRing {
++ (void)onCancelRing {
     //取消通知栏
     NSMutableArray *arraylist = [[NSMutableArray alloc] init];
     [arraylist addObject:@"Voip_Push"];
     if (@available(iOS 10.0, *)) {
         [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:arraylist];
     } else {
-        [[UIApplication sharedApplication] cancelLocalNotification:self.callNotification];
+        [[UIApplication sharedApplication] cancelLocalNotification:[YLT_SipModular shareInstance].callNotification];
     }
 }
 
