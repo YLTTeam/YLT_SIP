@@ -289,10 +289,13 @@ static YLT_SipServer *sipShareData = nil;
 }
 
 - (void)save {
-    [YLT_SipServer sharedInstance].currentSession.endTime = [[NSDate date] timeIntervalSince1970];
-    [[YLT_SipServer sharedInstance].currentSession saveCallback:^(BOOL success, id response) {
+    if (self.currentSession.startTime == 0) {
+        self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
+    }
+    self.currentSession.endTime = [[NSDate date] timeIntervalSince1970];
+    [self.currentSession saveCallback:^(BOOL success, id response) {
     }];
-    [[YLT_SipServer sharedInstance].currentSession clear];
+    [self.currentSession clear];
 }
 
 @end
