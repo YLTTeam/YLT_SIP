@@ -15,6 +15,7 @@
 
 @interface YLT_SipModular : YLT_BaseModular
 
+YLT_ShareInstanceHeader(YLT_SipModular);
 /**
  提示音
  */

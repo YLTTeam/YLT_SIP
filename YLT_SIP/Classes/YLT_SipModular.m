@@ -23,6 +23,13 @@
 @end
 
 @implementation YLT_SipModular
+
+YLT_ShareInstance(YLT_SipModular);
+
+- (void)YLT_init {
+    
+}
+
 NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wstrict-prototypes"
