@@ -43,6 +43,18 @@ static void on_call_sdp_created(pjsua_call_id call_id,
  注册的回调
  */
 @property (nonatomic, copy) void(^registerCallback)(BOOL success);
+/**
+ 密钥 安全密钥必须
+ */
+@property (nonatomic, strong) NSString *keys;
+/**
+ key id 用来获取加密密钥的key
+ */
+@property (nonatomic, strong) NSString *keyId;
+/**
+ 通过KEY ID 获取Key 非安全通话 不比理会
+ */
+@property (nonatomic, copy) NSString *(^keysBlock)(NSString *keyId);
 
 @end
 
@@ -203,8 +215,16 @@ static YLT_SipServer *sipShareData = nil;
  拨打电话
  
  @param destPhone 目标电话
+ @param keys 密钥 安全通话必须
  */
-- (void)makeCallTo:(NSString *)destPhone {
+- (void)makeCallTo:(NSString *)destPhone keys:(NSDictionary *)keys {
+    if ([keys isKindOfClass:[NSDictionary class]] && keys.allKeys.count > 0) {
+        self.keyId = [keys.allKeys firstObject];
+        self.keys = [keys objectForKey:self.keyId];
+    } else {
+        self.keys = nil;
+        self.keyId = @"";
+    }
     NSString *destURI = [NSString stringWithFormat:@"sip:%@@%@", destPhone, self.currentUser.domain];
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
     pjsua_call_id callId = 0;
@@ -213,7 +233,6 @@ static YLT_SipServer *sipShareData = nil;
     self.currentSession.sessionType = 1;
     self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
     self.currentSession.callId = callId;
-    self.currentSession.state = status;
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"呼叫失败  %zd", status);
         self.callback(SIP_STATUS_CALL_FAILED, nil);
@@ -228,13 +247,11 @@ static YLT_SipServer *sipShareData = nil;
     pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, NULL, NULL);
     self.currentSession.sessionType = 0;
     self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
-    self.currentSession.state = status;
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"应答失败");
         [self save];
         self.callback(SIP_STATUS_ANSWER_FAILED, nil);
     }
-    
 }
 
 /**
@@ -354,9 +371,11 @@ static void call_status_chage(pjsua_call_info ci) {
         }
             break;
         case PJSIP_INV_STATE_DISCONNECTED: {
-            [YLT_SipServer sharedInstance].callback(SIP_STATUS_DISCONNECTED, nil);
             if ([YLT_SipServer sharedInstance].currentSession.state == PJSIP_INV_STATE_CALLING) {
                 printf("呼叫失败！");
+                [YLT_SipServer sharedInstance].callback(SIP_STATUS_CALL_FAILED, nil);
+            } else {
+                [YLT_SipServer sharedInstance].callback(SIP_STATUS_DISCONNECTED, nil);
             }
             //保存通话记录并重制最新通话记录的数据
             if ([YLT_SipServer sharedInstance].currentSession.state != PJSIP_INV_STATE_DISCONNECTED) {
@@ -415,7 +434,6 @@ static void error_exit(const char *title, pj_status_t status) {
     exit(1);
 }
 
-char *keys = "0102030405060708";
 /* SDP包创建时候的回调 */
 static void on_call_sdp_created(pjsua_call_id call_id,
                                 pjmedia_sdp_session *sdp,
@@ -430,21 +448,31 @@ static void on_call_sdp_created(pjsua_call_id call_id,
             pjmedia_sdp_media *media = *(rem_sdp->media+i);
             pj_str_t k = {"k", 1};
             pjmedia_sdp_attr *key = pjmedia_sdp_attr_find(media->attr_count, media->attr, &k, NULL);
-            for (int i = 0; i < key->value.slen; i++) {
-                printf("%c", *(key->value.ptr+i));
+            NSString *keyID = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];
+            YLT_LogInfo(@"key id = %@", keyID);
+            if ([keyID YLT_CheckString] && [YLT_SipServer sharedInstance].receiveCall) {
+                NSString *key = [YLT_SipServer sharedInstance].receiveCall(keyID);
+                YLT_Log(@"key = %@", key);
+                if ([key YLT_CheckString]) {
+                    pjmedia_set_key((unsigned char *)key.UTF8String, (unsigned int)key.length);
+                }
             }
         }
-        NSInteger keyIndex = 0;//获取到索引  将索引保存起来  等到需要解密的时候使用
-        //        pjmedia_set_key(keys, 1);
     } else {//发送方  下面传输加密密钥索引
         //获取到需要使用的加密密钥的索引  然后放到 0807060504030201 字段部分 进行传输
         for (int i = 0; i < sdp->media_count; i++) {
             pjmedia_sdp_media *media = *(sdp->media+i);
-            pj_str_t value = {"0807060504030201", 16};//索引值
+            if (![[YLT_SipServer sharedInstance].keyId YLT_CheckString]) {
+                [YLT_SipServer sharedInstance].keyId = @"";
+            }
+            char *keyID = (char *)[YLT_SipServer sharedInstance].keyId.UTF8String;
+            pj_str_t value = {keyID, [YLT_SipServer sharedInstance].keyId.length};//索引值
             pjmedia_sdp_attr* key = pjmedia_sdp_attr_create(pool, "k", &value);
             pjmedia_sdp_media_add_attr(media, key);
         }
-        //        pjmedia_set_key(keys, 1*16);
+        if ([[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [[YLT_SipServer sharedInstance].keys YLT_CheckString]) {
+            pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
+        }
     }
 }
 

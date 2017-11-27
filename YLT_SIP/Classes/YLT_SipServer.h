@@ -42,6 +42,10 @@ typedef NS_ENUM(NSUInteger, SipStatus) {
  回调
  */
 @property (nonatomic, copy) void(^callback)(SipStatus status, NSDictionary *info);
+/**
+ 接收到key id 以后 回调拿到KEY
+ */
+@property (nonatomic, copy) NSString *(^receiveCall)(NSString *keyId);
 
 /**
  是否静音
@@ -77,8 +81,10 @@ typedef NS_ENUM(NSUInteger, SipStatus) {
  拨打电话
  
  @param destPhone 目标电话
+ @param keys 密钥 安全通话必须 @"key":@"value" key为密钥的传输KEY，value即为密钥
  */
-- (void)makeCallTo:(NSString *)destPhone;
+- (void)makeCallTo:(NSString *)destPhone keys:(NSDictionary *)keys;
+
 
 /**
  应答

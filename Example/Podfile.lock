@@ -5,11 +5,11 @@ PODS:
   - MJExtension (3.0.13)
   - OpenSSL (1.0.210)
   - ReactiveObjC (3.0.0)
-  - YLT_BaseLib (0.0.27):
+  - YLT_BaseLib (0.0.29):
     - FMDB
     - MJExtension (~> 3.0.13)
-  - YLT_PJSip (0.0.4)
-  - YLT_SIP (0.0.8):
+  - YLT_PJSip (0.0.5)
+  - YLT_SIP (0.0.12):
     - OpenSSL
     - ReactiveObjC
     - YLT_BaseLib
@@ -27,9 +27,9 @@ SPEC CHECKSUMS:
   MJExtension: 5932755f451458eefa24239358817f8d291240c7
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   ReactiveObjC: ce79989e8684b9086b5f8d0c74bc7b81a8729c9e
-  YLT_BaseLib: fbf3563610c9316d7dc19ed868d19299e3b222c6
-  YLT_PJSip: 1a4fdd32603cf049a11a3eee54c1d472917826f9
-  YLT_SIP: 89f496d7084009dbb206f726df4d8f6fb5e0c14e
+  YLT_BaseLib: bcc7836ba202f7bcf690f750f5235dc7a0d31774
+  YLT_PJSip: 285ed033aaed32dd0dda454c49bfb5ff6e3266fd
+  YLT_SIP: 0c87d882595be4d347fa35878f1a68b956a99720
 
 PODFILE CHECKSUM: 08f8d8142d450dfa3ce43e1e8372064b592e219b
 
