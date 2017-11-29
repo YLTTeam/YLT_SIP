@@ -228,6 +228,7 @@ static YLT_SipServer *sipShareData = nil;
     NSString *destURI = [NSString stringWithFormat:@"sip:%@@%@", destPhone, self.currentUser.domain];
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
     pjsua_call_id callId = 0;
+    
     pj_status_t status = pjsua_call_make_call(self.currentUser.accId, &uri, 0, NULL, NULL, &callId);
     self.currentSession.phone = destURI;
     self.currentSession.sessionType = 1;
@@ -448,13 +449,13 @@ static void on_call_sdp_created(pjsua_call_id call_id,
             pjmedia_sdp_media *media = *(rem_sdp->media+i);
             pj_str_t k = {"k", 1};
             pjmedia_sdp_attr *key = pjmedia_sdp_attr_find(media->attr_count, media->attr, &k, NULL);
-            NSString *keyID = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];
-            YLT_LogInfo(@"key id = %@", keyID);
-            if ([keyID YLT_CheckString] && [YLT_SipServer sharedInstance].receiveCall) {
-                NSString *key = [YLT_SipServer sharedInstance].receiveCall(keyID);
-                YLT_Log(@"key = %@", key);
-                if ([key YLT_CheckString]) {
-                    pjmedia_set_key((unsigned char *)key.UTF8String, (unsigned int)key.length);
+            if (key) {
+                NSString *keyID = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];
+                if ([keyID YLT_CheckString] && [YLT_SipServer sharedInstance].receiveCall) {
+                    NSString *key = [YLT_SipServer sharedInstance].receiveCall(keyID);
+                    if ([key YLT_CheckString]) {
+                        pjmedia_set_key((unsigned char *)key.UTF8String, (unsigned int)key.length);
+                    }
                 }
             }
         }
