@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'YLT_SIP'
-  s.version          = '0.0.13'
+  s.version          = '0.0.14'
   s.summary          = 'A short description of YLT_SIP.'
 
 

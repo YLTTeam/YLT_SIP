@@ -15,6 +15,8 @@
 
 #define THIS_FILE "YLT_SipServer.m"
 
+#define NEED_ENCODER YES
+
 const size_t MAX_SIP_ID_LENGTH = 50;
 const size_t MAX_SIP_REG_URI_LENGTH = 50;
 
@@ -228,7 +230,6 @@ static YLT_SipServer *sipShareData = nil;
     NSString *destURI = [NSString stringWithFormat:@"sip:%@@%@", destPhone, self.currentUser.domain];
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
     pjsua_call_id callId = 0;
-    
     pj_status_t status = pjsua_call_make_call(self.currentUser.accId, &uri, 0, NULL, NULL, &callId);
     self.currentSession.phone = destURI;
     self.currentSession.sessionType = 1;
@@ -245,7 +246,9 @@ static YLT_SipServer *sipShareData = nil;
  应答
  */
 - (void)answerCall {
-    pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, NULL, NULL);
+    pj_str_t reason = pj_str((char *)self.keyId.UTF8String);
+    BOOL res = [self.keys YLT_CheckString] && [self.keyId YLT_CheckString];
+    pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, res?&reason:NULL, NULL);
     self.currentSession.sessionType = 0;
     self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
     if (status != PJ_SUCCESS) {
@@ -340,6 +343,12 @@ static void on_reg_state2(pjsua_acc_id acc_id, pjsua_reg_info *info) {
 }
 
 static void call_status_chage(pjsua_call_info ci) {
+    if (ci.last_status == PJSIP_SC_OK && [[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.last_status_text.ptr]] && ci.state == PJSIP_INV_STATE_CONFIRMED && NEED_ENCODER && [YLT_SipServer sharedInstance].currentSession.sessionType == 1) {
+        if ([[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [[YLT_SipServer sharedInstance].keys YLT_CheckString]) {
+            pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
+        }
+    }
+    
     switch (ci.state) {
         case PJSIP_INV_STATE_INCOMING: {
             [YLT_SipServer sharedInstance].currentSession.sessionType = 0;
@@ -440,21 +449,24 @@ static void on_call_sdp_created(pjsua_call_id call_id,
                                 pjmedia_sdp_session *sdp,
                                 pj_pool_t *pool,
                                 const pjmedia_sdp_session *rem_sdp) {
+    pjmedia_key_clear();
     /**
      * 远程里面有数据      说明是接收方     接收方解密
      * 远程里面没有数据    说明是发送方     发送方加密数据
      **/
     if (rem_sdp) {//接收方  下面接收加密密钥索引
+        [YLT_SipServer sharedInstance].keyId = @"";
+        [YLT_SipServer sharedInstance].keys = @"";
         for (int i = 0; i < rem_sdp->media_count; i++) {
             pjmedia_sdp_media *media = *(rem_sdp->media+i);
             pj_str_t k = {"k", 1};
             pjmedia_sdp_attr *key = pjmedia_sdp_attr_find(media->attr_count, media->attr, &k, NULL);
             if (key) {
-                NSString *keyID = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];
-                if ([keyID YLT_CheckString] && [YLT_SipServer sharedInstance].receiveCall) {
-                    NSString *key = [YLT_SipServer sharedInstance].receiveCall(keyID);
-                    if ([key YLT_CheckString]) {
-                        pjmedia_set_key((unsigned char *)key.UTF8String, (unsigned int)key.length);
+                [YLT_SipServer sharedInstance].keyId = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];
+                if (NEED_ENCODER && [[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [YLT_SipServer sharedInstance].receiveCall) {
+                    [YLT_SipServer sharedInstance].keys = [YLT_SipServer sharedInstance].receiveCall([YLT_SipServer sharedInstance].keyId);
+                    if ([[YLT_SipServer sharedInstance].keys YLT_CheckString]) {
+                        pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
                     }
                 }
             }
@@ -470,9 +482,6 @@ static void on_call_sdp_created(pjsua_call_id call_id,
             pj_str_t value = {keyID, [YLT_SipServer sharedInstance].keyId.length};//索引值
             pjmedia_sdp_attr* key = pjmedia_sdp_attr_create(pool, "k", &value);
             pjmedia_sdp_media_add_attr(media, key);
-        }
-        if ([[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [[YLT_SipServer sharedInstance].keys YLT_CheckString]) {
-            pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
         }
     }
 }
