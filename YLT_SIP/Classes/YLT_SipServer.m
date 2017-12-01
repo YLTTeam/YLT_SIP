@@ -343,9 +343,14 @@ static void on_reg_state2(pjsua_acc_id acc_id, pjsua_reg_info *info) {
 }
 
 static void call_status_chage(pjsua_call_info ci) {
-    if (ci.last_status == PJSIP_SC_OK && [[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.last_status_text.ptr]] && ci.state == PJSIP_INV_STATE_CONFIRMED && NEED_ENCODER && [YLT_SipServer sharedInstance].currentSession.sessionType == 1) {
-        if ([[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [[YLT_SipServer sharedInstance].keys YLT_CheckString]) {
-            pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
+    if (ci.state == PJSIP_INV_STATE_CONFIRMED) {
+        pjmedia_key_clear();
+        if (ci.last_status == PJSIP_SC_OK && [[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.last_status_text.ptr]] && ci.state == PJSIP_INV_STATE_CONFIRMED && NEED_ENCODER) {
+            if ([[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [[YLT_SipServer sharedInstance].keys YLT_CheckString]) {
+                pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
+                [YLT_SipServer sharedInstance].keyId = @"";
+                [YLT_SipServer sharedInstance].keys = @"";
+            }
         }
     }
     
@@ -409,6 +414,7 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
               ci.remote_info.ptr));
     if ([YLT_SipServer sharedInstance].currentSession.callId == 0) {
         [YLT_SipServer sharedInstance].currentSession.callId = call_id;
+        
     } else {//当前通话处理占线状态
         [YLT_SipServer sharedInstance].callback(SIP_STATUS_BUSYING, nil);
         [[YLT_SipServer sharedInstance] save];
@@ -449,24 +455,21 @@ static void on_call_sdp_created(pjsua_call_id call_id,
                                 pjmedia_sdp_session *sdp,
                                 pj_pool_t *pool,
                                 const pjmedia_sdp_session *rem_sdp) {
-    pjmedia_key_clear();
+    
     /**
      * 远程里面有数据      说明是接收方     接收方解密
      * 远程里面没有数据    说明是发送方     发送方加密数据
      **/
     if (rem_sdp) {//接收方  下面接收加密密钥索引
-        [YLT_SipServer sharedInstance].keyId = @"";
-        [YLT_SipServer sharedInstance].keys = @"";
-        for (int i = 0; i < rem_sdp->media_count; i++) {
-            pjmedia_sdp_media *media = *(rem_sdp->media+i);
-            pj_str_t k = {"k", 1};
-            pjmedia_sdp_attr *key = pjmedia_sdp_attr_find(media->attr_count, media->attr, &k, NULL);
-            if (key) {
-                [YLT_SipServer sharedInstance].keyId = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];
-                if (NEED_ENCODER && [[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [YLT_SipServer sharedInstance].receiveCall) {
-                    [YLT_SipServer sharedInstance].keys = [YLT_SipServer sharedInstance].receiveCall([YLT_SipServer sharedInstance].keyId);
-                    if ([[YLT_SipServer sharedInstance].keys YLT_CheckString]) {
-                        pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
+        if (![[YLT_SipServer sharedInstance].keyId YLT_CheckString]) {
+            for (int i = 0; i < rem_sdp->media_count; i++) {
+                pjmedia_sdp_media *media = *(rem_sdp->media+i);
+                pj_str_t k = {"k", 1};
+                pjmedia_sdp_attr *key = pjmedia_sdp_attr_find(media->attr_count, media->attr, &k, NULL);
+                if (key) {
+                    [YLT_SipServer sharedInstance].keyId = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];
+                    if (NEED_ENCODER && [[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [YLT_SipServer sharedInstance].receiveCall) {
+                        [YLT_SipServer sharedInstance].keys = [YLT_SipServer sharedInstance].receiveCall([YLT_SipServer sharedInstance].keyId);
                     }
                 }
             }

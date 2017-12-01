@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'YLT_SIP'
-  s.version          = '0.0.14'
+  s.version          = '0.0.15'
   s.summary          = 'A short description of YLT_SIP.'
 
 
@@ -26,5 +26,6 @@ TODO: Add long description of the pod here.
   s.dependency 'YLT_BaseLib'
   s.dependency 'OpenSSL'
   s.dependency 'ReactiveObjC'
+  s.dependency 'ADAudioTool'
 
 end
