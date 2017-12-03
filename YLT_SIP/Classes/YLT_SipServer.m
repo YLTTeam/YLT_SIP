@@ -468,7 +468,7 @@ static void on_call_sdp_created(pjsua_call_id call_id,
      * 远程里面没有数据    说明是发送方     发送方加密数据
      **/
     if (rem_sdp) {//接收方  下面接收加密密钥索引
-        pjmedia_sdp_attr *key;
+        pjmedia_sdp_attr *key = NULL;
         for (int i = 0; i < rem_sdp->media_count; i++) {
             pjmedia_sdp_media *media = *(rem_sdp->media+i);
             pj_str_t k = {"k", 1};
