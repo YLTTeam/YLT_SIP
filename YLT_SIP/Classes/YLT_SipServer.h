@@ -23,6 +23,9 @@ typedef NS_ENUM(NSUInteger, SipStatus) {
     SIP_STATUS_ANSWER_FAILED = 9,//应答失败
     
     SIP_STATUS_BUSYING = 10,//忙线中
+    
+    SIP_STATUS_UNSAFE = 11,//非安全通话
+    SIP_STATUS_SAFE = 12,//安全通话
 };
 
 

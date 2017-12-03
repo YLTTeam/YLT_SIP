@@ -223,9 +223,11 @@ static YLT_SipServer *sipShareData = nil;
     if ([keys isKindOfClass:[NSDictionary class]] && keys.allKeys.count > 0) {
         self.keyId = [keys.allKeys firstObject];
         self.keys = [keys objectForKey:self.keyId];
+        self.callback(SIP_STATUS_SAFE, nil);
     } else {
         self.keys = nil;
         self.keyId = @"";
+        self.callback(SIP_STATUS_UNSAFE, nil);
     }
     NSString *destURI = [NSString stringWithFormat:@"sip:%@@%@", destPhone, self.currentUser.domain];
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
@@ -350,7 +352,12 @@ static void call_status_chage(pjsua_call_info ci) {
                 pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
                 [YLT_SipServer sharedInstance].keyId = @"";
                 [YLT_SipServer sharedInstance].keys = @"";
+                [YLT_SipServer sharedInstance].callback(SIP_STATUS_SAFE, nil);
+            } else {
+                [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
             }
+        } else {
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
         }
     }
     
@@ -461,30 +468,39 @@ static void on_call_sdp_created(pjsua_call_id call_id,
      * 远程里面没有数据    说明是发送方     发送方加密数据
      **/
     if (rem_sdp) {//接收方  下面接收加密密钥索引
-        if (![[YLT_SipServer sharedInstance].keyId YLT_CheckString]) {
-            for (int i = 0; i < rem_sdp->media_count; i++) {
-                pjmedia_sdp_media *media = *(rem_sdp->media+i);
-                pj_str_t k = {"k", 1};
-                pjmedia_sdp_attr *key = pjmedia_sdp_attr_find(media->attr_count, media->attr, &k, NULL);
-                if (key) {
-                    [YLT_SipServer sharedInstance].keyId = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];
-                    if (NEED_ENCODER && [[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [YLT_SipServer sharedInstance].receiveCall) {
-                        [YLT_SipServer sharedInstance].keys = [YLT_SipServer sharedInstance].receiveCall([YLT_SipServer sharedInstance].keyId);
-                    }
-                }
+        pjmedia_sdp_attr *key;
+        for (int i = 0; i < rem_sdp->media_count; i++) {
+            pjmedia_sdp_media *media = *(rem_sdp->media+i);
+            pj_str_t k = {"k", 1};
+            key = pjmedia_sdp_attr_find(media->attr_count, media->attr, &k, NULL);
+        }
+        if (key) {
+            [YLT_SipServer sharedInstance].keyId = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];
+            if (NEED_ENCODER && [[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [YLT_SipServer sharedInstance].receiveCall) {
+                [YLT_SipServer sharedInstance].keys = [YLT_SipServer sharedInstance].receiveCall([YLT_SipServer sharedInstance].keyId);
+                [YLT_SipServer sharedInstance].callback(SIP_STATUS_SAFE, nil);
+            } else {
+                [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
             }
+        } else {
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
         }
     } else {//发送方  下面传输加密密钥索引
         //获取到需要使用的加密密钥的索引  然后放到 0807060504030201 字段部分 进行传输
-        for (int i = 0; i < sdp->media_count; i++) {
-            pjmedia_sdp_media *media = *(sdp->media+i);
-            if (![[YLT_SipServer sharedInstance].keyId YLT_CheckString]) {
-                [YLT_SipServer sharedInstance].keyId = @"";
+        if ([[YLT_SipServer sharedInstance].keyId YLT_CheckString]) {
+            for (int i = 0; i < sdp->media_count; i++) {
+                pjmedia_sdp_media *media = *(sdp->media+i);
+                if (![[YLT_SipServer sharedInstance].keyId YLT_CheckString]) {
+                    [YLT_SipServer sharedInstance].keyId = @"";
+                }
+                char *keyID = (char *)[YLT_SipServer sharedInstance].keyId.UTF8String;
+                pj_str_t value = {keyID, [YLT_SipServer sharedInstance].keyId.length};//索引值
+                pjmedia_sdp_attr* key = pjmedia_sdp_attr_create(pool, "k", &value);
+                pjmedia_sdp_media_add_attr(media, key);
             }
-            char *keyID = (char *)[YLT_SipServer sharedInstance].keyId.UTF8String;
-            pj_str_t value = {keyID, [YLT_SipServer sharedInstance].keyId.length};//索引值
-            pjmedia_sdp_attr* key = pjmedia_sdp_attr_create(pool, "k", &value);
-            pjmedia_sdp_media_add_attr(media, key);
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_SAFE, nil);
+        } else {
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
         }
     }
 }
