@@ -24,6 +24,11 @@
 @property (nonatomic, strong) NSString *domain;
 
 /**
+ 服务器端口号
+ */
+@property (nonatomic, assign) NSInteger port;
+
+/**
  用户名
  */
 @property (nonatomic, strong) NSString *username;

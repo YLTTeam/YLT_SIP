@@ -18,6 +18,7 @@
     self.loginState = NO;
     self.username = @"";
     self.domain = @"";
+    self.port = 0;
     self.password = @"";
     self.accId = 0;
 }

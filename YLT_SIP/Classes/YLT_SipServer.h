@@ -61,12 +61,13 @@ typedef NS_ENUM(NSUInteger, SipStatus) {
  注册Sip服务
  
  @param server 服务器域名
+ @param port 服务器端口号
  @param username 用户名
  @param password 密码
  @param callback 回调
  @return 是否登录成功
  */
-- (BOOL)registerServiceOnServer:(NSString *)server username:(NSString *)username password:(NSString *)password callback:(void(^)(BOOL success))callback;
+- (BOOL)registerServiceOnServer:(NSString *)server port:(NSInteger)port username:(NSString *)username password:(NSString *)password callback:(void(^)(BOOL success))callback;
 
 /**
  自动登录

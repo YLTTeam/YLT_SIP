@@ -75,16 +75,19 @@ static YLT_SipServer *sipShareData = nil;
  注册Sip服务
  
  @param server 服务器域名
+ @param port 服务器端口号
  @param username 用户名
  @param password 密码
  @param callback 回调
  @return 是否登录成功
  */
 - (BOOL)registerServiceOnServer:(NSString *)server
+                           port:(NSInteger)port
                        username:(NSString *)username
                        password:(NSString *)password
                        callback:(void(^)(BOOL success))callback {
     self.registerCallback = callback;
+    port = (port==0)?5060:port;
     pj_status_t status;
     //注册线程
     if (!pj_thread_is_registered()) {
@@ -131,7 +134,7 @@ static YLT_SipServer *sipShareData = nil;
     //添加 UDP 协议支持
     pjsua_transport_config udp_cfg;
     pjsua_transport_config_default(&udp_cfg);
-    udp_cfg.port = 5060;
+    udp_cfg.port = (unsigned int)port;
     status = pjsua_transport_create(PJSIP_TRANSPORT_UDP, &udp_cfg, NULL);
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"UDP创建失败");
@@ -140,7 +143,7 @@ static YLT_SipServer *sipShareData = nil;
     
     pjsua_transport_config tcp_cfg;
     pjsua_transport_config_default(&tcp_cfg);
-    tcp_cfg.port = 5060;
+    tcp_cfg.port = (unsigned int)port;
     status = pjsua_transport_create(PJSIP_TRANSPORT_TCP, &tcp_cfg, NULL);
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"创建TCP传输失败");
@@ -177,6 +180,7 @@ static YLT_SipServer *sipShareData = nil;
     self.currentUser.username = username;
     self.currentUser.password = password;
     self.currentUser.domain = server;
+    self.currentUser.port = port;
     [self.currentUser save];
     return YES;
 }
@@ -190,7 +194,7 @@ static YLT_SipServer *sipShareData = nil;
     if ([self.currentUser read] && self.currentUser.check) {//读取上次登录的用户数据
         self.currentUser.loginState = NO;
         @weakify(self);
-        [self registerServiceOnServer:self.currentUser.domain username:self.currentUser.username password:self.currentUser.password callback:^(BOOL success) {
+        [self registerServiceOnServer:self.currentUser.domain port:self.currentUser.port username:self.currentUser.username password:self.currentUser.password callback:^(BOOL success) {
             @strongify(self);
             self.currentUser.loginState = YES;
         }];
