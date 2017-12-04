@@ -141,14 +141,14 @@ static YLT_SipServer *sipShareData = nil;
         return NO;
     }
     
-    pjsua_transport_config tcp_cfg;
-    pjsua_transport_config_default(&tcp_cfg);
-    tcp_cfg.port = (unsigned int)port;
-    status = pjsua_transport_create(PJSIP_TRANSPORT_TCP, &tcp_cfg, NULL);
-    if (status != PJ_SUCCESS) {
-        YLT_LogError(@"创建TCP传输失败");
-        return NO;
-    }
+//    pjsua_transport_config tcp_cfg;
+//    pjsua_transport_config_default(&tcp_cfg);
+//    tcp_cfg.port = (unsigned int)port;
+//    status = pjsua_transport_create(PJSIP_TRANSPORT_TCP, &tcp_cfg, NULL);
+//    if (status != PJ_SUCCESS) {
+//        YLT_LogError(@"创建TCP传输失败");
+//        return NO;
+//    }
     
     //启动 pjsua
     // 启动pjsua
@@ -170,6 +170,9 @@ static YLT_SipServer *sipShareData = nil;
     acc_cfg.cred_info[0].username = pj_str((char *)[username UTF8String]);
     acc_cfg.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
     acc_cfg.cred_info[0].data = pj_str((char *)[password UTF8String]);
+    acc_cfg.media_stun_use = PJSUA_STUN_USE_DISABLED;
+    acc_cfg.sip_stun_use = PJSUA_STUN_USE_DISABLED;
+    
     pjsua_acc_id _acc_id;
     status = pjsua_acc_add(&acc_cfg, PJ_TRUE, &_acc_id);
     if (status != PJ_SUCCESS) {
