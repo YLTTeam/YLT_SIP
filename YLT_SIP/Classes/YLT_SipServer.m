@@ -87,6 +87,8 @@ static YLT_SipServer *sipShareData = nil;
                        password:(NSString *)password
                        callback:(void(^)(BOOL success))callback {
     self.registerCallback = callback;
+    //    username = @"1001";
+    //    password = @"123456";
     port = (port==0)?5060:port;
     pj_status_t status;
     //注册线程
@@ -254,9 +256,13 @@ static YLT_SipServer *sipShareData = nil;
  应答
  */
 - (void)answerCall {
-    pj_str_t reason = pj_str((char *)self.keyId.UTF8String);
+    //    pj_str_t reason = pj_str((char *)self.keyId.UTF8String);
     BOOL res = [self.keys YLT_CheckString] && [self.keyId YLT_CheckString];
-    pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, res?&reason:NULL, NULL);
+    if (res) {
+        pjsua_call_set_user_data(self.currentSession.callId, (void *)self.keyId.UTF8String);
+    }
+    
+    pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, NULL, NULL);
     self.currentSession.sessionType = 0;
     self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
     if (status != PJ_SUCCESS) {
@@ -403,15 +409,17 @@ static void call_status_change(pjsua_call_info ci) {
     
     if (ci.state == PJSIP_INV_STATE_CONNECTING) {
         pjmedia_key_clear();
-        if ([[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.last_status_text.ptr]] && [YLT_SipServer sharedInstance].keyId.YLT_CheckString && [YLT_SipServer sharedInstance].keys.YLT_CheckString) {
+    } else if (ci.state == PJSIP_INV_STATE_CONFIRMED) {
+        if (ci.remote_key.ptr && [[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.remote_key.ptr]] && [YLT_SipServer sharedInstance].keyId.YLT_CheckString && [YLT_SipServer sharedInstance].keys.YLT_CheckString) {
             pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
+            [YLT_SipServer sharedInstance].keyId = @"";
+            [YLT_SipServer sharedInstance].keys = @"";
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_SAFE, nil);
         } else {
+            [YLT_SipServer sharedInstance].keyId = @"";
+            [YLT_SipServer sharedInstance].keys = @"";
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
         }
-    } else if (ci.state == PJSIP_INV_STATE_CONFIRMED) {
-        [YLT_SipServer sharedInstance].keyId = @"";
-        [YLT_SipServer sharedInstance].keys = @"";
     }
     
     [YLT_SipServer sharedInstance].currentSession.state = ci.state;

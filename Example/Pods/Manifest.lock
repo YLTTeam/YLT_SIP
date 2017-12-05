@@ -9,8 +9,8 @@ PODS:
   - YLT_BaseLib (0.0.29):
     - FMDB
     - MJExtension (~> 3.0.13)
-  - YLT_PJSip (0.0.8)
-  - YLT_SIP (0.0.14):
+  - YLT_PJSip (0.0.9)
+  - YLT_SIP (0.0.20):
     - ADAudioTool
     - OpenSSL
     - ReactiveObjC
@@ -31,8 +31,8 @@ SPEC CHECKSUMS:
   OpenSSL: 246ffb948e9d56466727fd318134af35f5aa764e
   ReactiveObjC: ce79989e8684b9086b5f8d0c74bc7b81a8729c9e
   YLT_BaseLib: bcc7836ba202f7bcf690f750f5235dc7a0d31774
-  YLT_PJSip: 4e5c5c0cc04f943672a7ca748139e833ee23b7ca
-  YLT_SIP: 62614672b5feb4f3d006dc565377da141cb19775
+  YLT_PJSip: c5b4d6f986db0915a8779cf6c2237014de13e343
+  YLT_SIP: b410ff1753c9f3705c6e58a0da10315ed419d2a1
 
 PODFILE CHECKSUM: 08f8d8142d450dfa3ce43e1e8372064b592e219b
 
