@@ -141,14 +141,14 @@ static YLT_SipServer *sipShareData = nil;
         return NO;
     }
     
-//    pjsua_transport_config tcp_cfg;
-//    pjsua_transport_config_default(&tcp_cfg);
-//    tcp_cfg.port = (unsigned int)port;
-//    status = pjsua_transport_create(PJSIP_TRANSPORT_TCP, &tcp_cfg, NULL);
-//    if (status != PJ_SUCCESS) {
-//        YLT_LogError(@"创建TCP传输失败");
-//        return NO;
-//    }
+    //    pjsua_transport_config tcp_cfg;
+    //    pjsua_transport_config_default(&tcp_cfg);
+    //    tcp_cfg.port = (unsigned int)port;
+    //    status = pjsua_transport_create(PJSIP_TRANSPORT_TCP, &tcp_cfg, NULL);
+    //    if (status != PJ_SUCCESS) {
+    //        YLT_LogError(@"创建TCP传输失败");
+    //        return NO;
+    //    }
     
     //启动 pjsua
     // 启动pjsua
@@ -199,7 +199,6 @@ static YLT_SipServer *sipShareData = nil;
         @weakify(self);
         [self registerServiceOnServer:self.currentUser.domain port:self.currentUser.port username:self.currentUser.username password:self.currentUser.password callback:^(BOOL success) {
             @strongify(self);
-            self.currentUser.loginState = YES;
         }];
     }
 }
@@ -335,6 +334,8 @@ static YLT_SipServer *sipShareData = nil;
 
 #pragma mark - c method
 
+
+
 /* 注册状态改变的回调 */
 static void on_reg_state2(pjsua_acc_id acc_id, pjsua_reg_info *info) {
     switch (info->cbparam->code) {
@@ -347,27 +348,13 @@ static void on_reg_state2(pjsua_acc_id acc_id, pjsua_reg_info *info) {
             [YLT_SipServer sharedInstance].registerCallback(NO);
             break;
         default:
+            [YLT_SipServer sharedInstance].currentUser.loginState = NO;
+            [YLT_SipServer sharedInstance].registerCallback(NO);
             break;
     }
 }
 
-static void call_status_chage(pjsua_call_info ci) {
-    if (ci.state == PJSIP_INV_STATE_CONFIRMED) {
-        pjmedia_key_clear();
-        if (ci.last_status == PJSIP_SC_OK && [[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.last_status_text.ptr]] && ci.state == PJSIP_INV_STATE_CONFIRMED && NEED_ENCODER) {
-            if ([[YLT_SipServer sharedInstance].keyId YLT_CheckString] && [[YLT_SipServer sharedInstance].keys YLT_CheckString]) {
-                pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
-                [YLT_SipServer sharedInstance].keyId = @"";
-                [YLT_SipServer sharedInstance].keys = @"";
-                [YLT_SipServer sharedInstance].callback(SIP_STATUS_SAFE, nil);
-            } else {
-                [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
-            }
-        } else {
-            [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
-        }
-    }
-    
+static void call_status_change(pjsua_call_info ci) {
     switch (ci.state) {
         case PJSIP_INV_STATE_INCOMING: {
             [YLT_SipServer sharedInstance].currentSession.sessionType = 0;
@@ -413,6 +400,20 @@ static void call_status_chage(pjsua_call_info ci) {
         }
             break;
     }
+    
+    if (ci.state == PJSIP_INV_STATE_CONNECTING) {
+        pjmedia_key_clear();
+        if ([[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.last_status_text.ptr]] && [YLT_SipServer sharedInstance].keyId.YLT_CheckString && [YLT_SipServer sharedInstance].keys.YLT_CheckString) {
+            pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_SAFE, nil);
+        } else {
+            [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
+        }
+    } else if (ci.state == PJSIP_INV_STATE_CONFIRMED) {
+        [YLT_SipServer sharedInstance].keyId = @"";
+        [YLT_SipServer sharedInstance].keys = @"";
+    }
+    
     [YLT_SipServer sharedInstance].currentSession.state = ci.state;
 }
 
@@ -443,7 +444,7 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e) {
     pjsua_call_info ci;
     PJ_UNUSED_ARG(e);
     pjsua_call_get_info(call_id, &ci);
-    call_status_chage(ci);
+    call_status_change(ci);
 }
 
 /* 会话时media状态改变的回调 */
