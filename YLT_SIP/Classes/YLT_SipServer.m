@@ -435,6 +435,7 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
     PJ_LOG(3,(THIS_FILE, "Incoming call from %.*s!!",
               (int)ci.remote_info.slen,
               ci.remote_info.ptr));
+    [YLT_SipServer sharedInstance].currentSession.phone = [NSString stringWithUTF8String:ci.remote_info.ptr];
     if ([YLT_SipServer sharedInstance].currentSession.callId == 0) {
         [YLT_SipServer sharedInstance].currentSession.callId = call_id;
         
@@ -443,7 +444,6 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
         [[YLT_SipServer sharedInstance] save];
         return;
     }
-    [YLT_SipServer sharedInstance].currentSession.phone = [NSString stringWithUTF8String:ci.remote_info.ptr];
     [YLT_SipServer sharedInstance].callback(SIP_STATUS_INCOMING, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
 }
 
