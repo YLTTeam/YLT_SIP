@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wstrict-prototypes"
 
 + (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [[YLT_SipServer sharedInstance] autoLogin];
+//    [[YLT_SipServer sharedInstance] autoLogin];
     PKPushRegistry *pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
     pushRegistry.delegate = [YLT_SipModular shareInstance];
     pushRegistry.desiredPushTypes = [NSSet setWithObjects:PKPushTypeVoIP, nil];
