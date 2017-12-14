@@ -15,8 +15,8 @@
         BOOL result = NO;
         @try {
             [db open];
-            [db executeUpdate:@"CREATE TABLE IF NOT EXISTS DB_YLT_SipSession(dbid INTEGER PRIMARY KEY AUTOINCREMENT, callId INTEGER, phone TEXT, sessionType INTEGER, answer TINYINT, state INTEGER, startTime INTEGER, endTime INTEGER, extra TEXT)"];
-            result = [db executeUpdate:@"INSERT INTO DB_YLT_SipSession(callId,phone,sessionType,answer,state,startTime,endTime,extra) VALUES (?,?,?,?,?,?,?,?)", [NSNumber numberWithInteger:self.callId], self.phone, [NSNumber numberWithInteger:self.sessionType], [NSNumber numberWithBool:self.answer], [NSNumber numberWithInteger:self.state], [NSNumber numberWithInteger:self.startTime], [NSNumber numberWithInteger:self.endTime], self.extra];
+            [db executeUpdate:@"CREATE TABLE IF NOT EXISTS DB_YLT_SipSession(dbid INTEGER PRIMARY KEY AUTOINCREMENT, callId INTEGER, phone TEXT, sessionType INTEGER, answer TINYINT, state INTEGER, unRead INTEGER, startTime INTEGER, endTime INTEGER, extra TEXT)"];
+            result = [db executeUpdate:@"INSERT INTO DB_YLT_SipSession(callId,phone,sessionType,answer,state,unRead,startTime,endTime,extra) VALUES (?,?,?,?,?,?,?,?,?)", [NSNumber numberWithInteger:self.callId], self.phone, [NSNumber numberWithInteger:self.sessionType], [NSNumber numberWithBool:self.answer], [NSNumber numberWithInteger:self.state], [NSNumber numberWithInteger:self.unRead], [NSNumber numberWithInteger:self.startTime], [NSNumber numberWithInteger:self.endTime], self.extra];
             self.dbid = [db lastInsertRowId];
             [db close];
         } @catch (NSException *exception) {
@@ -74,7 +74,7 @@
         BOOL result = NO;
         @try {
             [db open];
-            result = [db executeUpdate:@"UPDATE DB_YLT_SipSession SET  callId = ?, phone = ?, sessionType = ?, answer = ?, state = ?, startTime = ?, endTime = ?, extra = ? WHERE dbid = ?", [NSNumber numberWithInteger:self.callId], self.phone, [NSNumber numberWithInteger:self.sessionType], [NSNumber numberWithBool:self.answer], [NSNumber numberWithInteger:self.state], [NSNumber numberWithInteger:self.startTime], [NSNumber numberWithInteger:self.endTime], self.extra, [NSNumber numberWithInteger:self.dbid]];
+            result = [db executeUpdate:@"UPDATE DB_YLT_SipSession SET  callId = ?, phone = ?, sessionType = ?, answer = ?, state = ?, unRead = ?, startTime = ?, endTime = ?, extra = ? WHERE dbid = ?", [NSNumber numberWithInteger:self.callId], self.phone, [NSNumber numberWithInteger:self.sessionType], [NSNumber numberWithBool:self.answer], [NSNumber numberWithInteger:self.state], [NSNumber numberWithInteger:self.unRead], [NSNumber numberWithInteger:self.startTime], [NSNumber numberWithInteger:self.endTime], self.extra, [NSNumber numberWithInteger:self.dbid]];
             [db close];
         } @catch (NSException *exception) {
             YLT_LogError(@"数据库异常");
@@ -127,6 +127,7 @@
                 item.sessionType = [set intForColumn:@"sessionType"];
                 item.answer = [set boolForColumn:@"answer"];
                 item.state = [set intForColumn:@"state"];
+                item.unRead = [set intForColumn:@"unRead"];
                 item.startTime = [set intForColumn:@"startTime"];
                 item.endTime = [set intForColumn:@"endTime"];
                 item.extra = [set stringForColumn:@"extra"];
@@ -167,6 +168,35 @@
     }];
 }
 
++ (NSInteger)unreadCount {
+    FMDatabase *db = [FMDatabase databaseWithPath:[YLT_DBHelper shareInstance].dbPath];
+    if (![db open]) {
+        YLT_LogWarn(@"数据库打开失败");
+        return 0;
+    }
+    FMResultSet* set = [db executeQuery:[NSString stringWithFormat:@"SELECT sum(unRead) as unreadTotalCount FROM DB_YLT_SipSession"]];
+    while ([set next]) {
+        return [set intForColumn:@"unreadTotalCount"];
+    }
+    return 0;
+}
+
++ (void)clearUnreadCount {
+    [[YLT_DBHelper shareInstance].databaseQueue inDatabase:^(FMDatabase *db) {
+        BOOL result = NO;
+        @try {
+            [db open];
+            result = [db executeUpdate:@"UPDATE DB_YLT_SipSession SET unRead = 0"];
+            [db close];
+        } @catch (NSException *exception) {
+            YLT_LogError(@"数据库异常");
+            [db rollback];
+        } @finally {
+            [db commit];
+        }
+    }];
+}
+
 /**
  清除数据
  */
@@ -180,6 +210,7 @@
     self.startTime = 0;
     self.endTime = 0;
     self.state = 0;
+    self.unRead = 0;
 }
 
 @end

@@ -261,7 +261,7 @@ static YLT_SipServer *sipShareData = nil;
     if (res) {
         pjsua_call_set_user_data(self.currentSession.callId, (void *)self.keyId.UTF8String);
     }
-    
+    self.currentSession.unRead = 0;
     pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, NULL, NULL);
     self.currentSession.sessionType = 0;
     self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
@@ -276,6 +276,7 @@ static YLT_SipServer *sipShareData = nil;
  挂断
  */
 - (void)hangUp {
+    self.currentSession.unRead = 0;
     pjsua_call_hangup_all();
 }
 
@@ -436,6 +437,7 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
               (int)ci.remote_info.slen,
               ci.remote_info.ptr));
     [YLT_SipServer sharedInstance].currentSession.phone = [NSString stringWithUTF8String:ci.remote_info.ptr];
+    [YLT_SipServer sharedInstance].currentSession.unRead = 1;//未读
     if ([YLT_SipServer sharedInstance].currentSession.callId == 0) {
         [YLT_SipServer sharedInstance].currentSession.callId = call_id;
         

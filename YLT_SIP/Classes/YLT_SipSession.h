@@ -40,6 +40,10 @@
  */
 @property (readwrite, nonatomic, assign) NSInteger state;
 /**
+ 用来统计未接来电未读的数量
+ */
+@property (readwrite, nonatomic, assign) NSInteger unRead;//是否看过 0:看过 1:未看
+/**
  开始时间
  */
 @property (readwrite, nonatomic, assign) NSInteger startTime;
@@ -64,6 +68,8 @@
 + (void)updateByConditions:(NSString *)sender callback:(void(^)(BOOL success, id response))callback;
 + (void)findByConditions:(NSString *)sender callback:(void(^)(BOOL success, id response))callback;
 + (void)maxKeyValueCallback:(void(^)(BOOL success, id response))callback;
++ (NSInteger)unreadCount;
++ (void)clearUnreadCount;
 
 @end
 
