@@ -101,16 +101,16 @@ NS_ASSUME_NONNULL_BEGIN
         if (@available(iOS 10.0, *)) {
             [[YLT_CallManager shareInstance] reportIncomingCallWithContact:[YLT_SipServer sharedInstance].currentUser completion:^(NSError * _Nonnull error) {
             }];
-//            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-//            UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-//            content.body = [NSString localizedUserNotificationStringForKey:tips arguments:nil];;
-//            UNNotificationSound *customSound = [UNNotificationSound soundNamed:[[YLT_SipModular shareInstance].soundName YLT_CheckString]?[YLT_SipModular shareInstance].soundName:@"YLT_SIP/voip_call.caf"];
-//            content.sound = customSound;
-//            UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger
-//                                                          triggerWithTimeInterval:1 repeats:NO];
-//            [YLT_SipModular shareInstance].request = [UNNotificationRequest requestWithIdentifier:@"Voip_Push" content:content trigger:trigger];
-//            [center addNotificationRequest:[YLT_SipModular shareInstance].request withCompletionHandler:^(NSError *error) {
-//            }];
+            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+            UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+            content.body = [NSString localizedUserNotificationStringForKey:tips arguments:nil];;
+            UNNotificationSound *customSound = [UNNotificationSound soundNamed:[[YLT_SipModular shareInstance].soundName YLT_CheckString]?[YLT_SipModular shareInstance].soundName:@"YLT_SIP/voip_call.caf"];
+            content.sound = customSound;
+            UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger
+                                                          triggerWithTimeInterval:1 repeats:NO];
+            [YLT_SipModular shareInstance].request = [UNNotificationRequest requestWithIdentifier:@"Voip_Push" content:content trigger:trigger];
+            [center addNotificationRequest:[YLT_SipModular shareInstance].request withCompletionHandler:^(NSError *error) {
+            }];
         } else {
             [YLT_SipModular shareInstance].callNotification = [[UILocalNotification alloc] init];
             [YLT_SipModular shareInstance].callNotification.alertBody = tips;
