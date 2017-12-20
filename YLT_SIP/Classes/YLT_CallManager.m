@@ -6,6 +6,8 @@
 //
 
 #import "YLT_CallManager.h"
+#import "YLT_CallAudio.h"
+#import "YLT_SipServer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @implementation CXTransaction (ADPrivateAdditions)
@@ -64,7 +66,6 @@ YLT_ShareInstance(YLT_CallManager);
     callUpdate.remoteHandle = handle;
     NSString *username = [contact.allKeys containsObject:@"username"] ? contact[@"username"] : @"陌生来电";
     callUpdate.localizedCallerName = username;
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
     
     [self.provider reportNewIncomingCallWithUUID:self.currentUUID update:callUpdate completion:completion];
     return self.currentUUID;
@@ -125,10 +126,15 @@ YLT_ShareInstance(YLT_CallManager);
 
 #pragma mark - CXProviderDelegate
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(nonnull CXAnswerCallAction *)action {
+    [[YLT_CallAudio shareInstance] configureAudio];
     if (self.actionNotificationBlock) {
         self.actionNotificationBlock(action, YLT_CallActionTypeAnswer);
     }
     [action fulfill];
+}
+
+- (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
+    [[YLT_CallAudio shareInstance] startAudio];
 }
 
 - (void)provider:(CXProvider *)provider performEndCallAction:(nonnull CXEndCallAction *)action {
@@ -185,3 +191,4 @@ YLT_ShareInstance(YLT_CallManager);
 }
 @end
 NS_ASSUME_NONNULL_END
+

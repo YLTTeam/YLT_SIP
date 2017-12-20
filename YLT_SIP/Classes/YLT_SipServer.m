@@ -12,7 +12,8 @@
 #import <openssl/evp.h>
 #import "sip_types.h"
 #import <ReactiveObjC/ReactiveObjC.h>
-#import "YLT_AudioManager.h"
+#import "YLT_CallAudio.h"
+#import "YLT_CallManager.h"
 
 #define THIS_FILE "YLT_SipServer.m"
 
@@ -233,7 +234,6 @@ static YLT_SipServer *sipShareData = nil;
     NSString *destURI = [NSString stringWithFormat:@"sip:%@@%@", destPhone, self.currentUser.domain];
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
     pjsua_call_id callId = 0;
-    [[YLT_AudioManager shareInstance] configureAudioSessionStart];
     pj_status_t status = pjsua_call_make_call(self.currentUser.accId, &uri, 0, NULL, NULL, &callId);
     self.currentSession.phone = destURI;
     self.currentSession.sessionType = 1;
@@ -241,7 +241,7 @@ static YLT_SipServer *sipShareData = nil;
     self.currentSession.callId = callId;
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"呼叫失败  %zd", status);
-        [[YLT_AudioManager shareInstance] configureAudioSessionEnd];
+        [[YLT_CallAudio shareInstance] stopAudio];
         self.callback(SIP_STATUS_CALL_FAILED, nil);
         [self save];
     }
@@ -259,13 +259,13 @@ static YLT_SipServer *sipShareData = nil;
         pjsua_call_set_user_data(self.currentSession.callId, (void *)self.keyId.UTF8String);
     }
     self.currentSession.unRead = 0;
-    [[YLT_AudioManager shareInstance] configureAudioSessionStart];
     pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, NULL, NULL);
     self.currentSession.sessionType = 0;
     self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"应答失败");
-        [[YLT_AudioManager shareInstance] configureAudioSessionEnd];
+        [[YLT_CallAudio shareInstance] stopAudio];
+        [[YLT_CallManager shareInstance] updateCallState:YLT_CallStateEnded];
         [self save];
         self.callback(SIP_STATUS_ANSWER_FAILED, nil);
     }
@@ -324,14 +324,12 @@ static YLT_SipServer *sipShareData = nil;
 }
 
 - (void)save {
-    [[YLT_AudioManager shareInstance] configureAudioSessionEnd];
     if (self.currentSession.startTime == 0) {
         self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
     }
     self.currentSession.endTime = [[NSDate date] timeIntervalSince1970];
     [self.currentSession saveCallback:^(BOOL success, id response) {
     }];
-    [self.currentSession clear];
 }
 
 @end
@@ -403,6 +401,7 @@ static void call_status_change(pjsua_call_info ci) {
             //保存通话记录并重制最新通话记录的数据
             if ([YLT_SipServer sharedInstance].currentSession.state != PJSIP_INV_STATE_DISCONNECTED) {
             }
+            [[YLT_CallManager shareInstance] updateCallState:YLT_CallStateEnded];
             [[YLT_SipServer sharedInstance] save];
         }
             break;
@@ -429,6 +428,7 @@ static void call_status_change(pjsua_call_info ci) {
 /* 收到呼入电话的回调 */
 static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
                              pjsip_rx_data *rdata) {
+    [[YLT_SipServer sharedInstance].currentSession clear];
     pjsua_call_info ci;
     PJ_UNUSED_ARG(acc_id);
     PJ_UNUSED_ARG(rdata);
@@ -491,6 +491,9 @@ static void on_call_sdp_created(pjsua_call_id call_id,
             pjmedia_sdp_media *media = *(rem_sdp->media+i);
             pj_str_t k = {"k", 1};
             key = pjmedia_sdp_attr_find(media->attr_count, media->attr, &k, NULL);
+            if (key) {
+                break;
+            }
         }
         if (key) {
             [YLT_SipServer sharedInstance].keyId = [[NSString alloc] initWithCString:key->value.ptr encoding:NSUTF8StringEncoding];

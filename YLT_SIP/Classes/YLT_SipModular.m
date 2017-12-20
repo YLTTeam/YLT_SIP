@@ -99,6 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
         if ([YLT_SipModular shareInstance].tipCallback) {
             tips = [YLT_SipModular shareInstance].tipCallback(payload.dictionaryPayload);
         }
+        
+        [YLT_CallManager shareInstance].currentUUID = nil;
         NSString *mobilephone = @"13316987488";
         //本地通知，实现响铃效果
         if (@available(iOS 10.0, *)) {
