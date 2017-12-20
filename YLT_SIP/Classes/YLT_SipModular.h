@@ -31,4 +31,9 @@ YLT_ShareInstanceHeader(YLT_SipModular);
  */
 @property (nonatomic, copy) NSString *(^tipCallback)(NSDictionary *payload);
 
+/**
+ 通过mobile获取用户名
+ */
+@property (nonatomic, copy) NSString *(^displayNameCallback)(NSString *mobile);
+
 @end

@@ -12,6 +12,7 @@
 #import <openssl/evp.h>
 #import "sip_types.h"
 #import <ReactiveObjC/ReactiveObjC.h>
+#import "YLT_AudioManager.h"
 
 #define THIS_FILE "YLT_SipServer.m"
 
@@ -19,14 +20,6 @@
 
 const size_t MAX_SIP_ID_LENGTH = 50;
 const size_t MAX_SIP_REG_URI_LENGTH = 50;
-
-static int decrypt_aes(unsigned char* input, unsigned int input_len,
-                       unsigned char* output,  unsigned int outbuf_len,
-                       unsigned char* key, unsigned char *iv, int padding);
-
-static int encrypt_aes(unsigned char* input, unsigned int input_len,
-                       unsigned char* output,  unsigned int outbuf_len,
-                       unsigned char* key, unsigned char *iv, int padding);
 
 static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id, pjsip_rx_data *rdata);
 static void on_call_state(pjsua_call_id call_id, pjsip_event *e);
@@ -240,6 +233,7 @@ static YLT_SipServer *sipShareData = nil;
     NSString *destURI = [NSString stringWithFormat:@"sip:%@@%@", destPhone, self.currentUser.domain];
     pj_str_t uri = pj_str((char *)[destURI UTF8String]);
     pjsua_call_id callId = 0;
+    [[YLT_AudioManager shareInstance] configureAudioSessionStart];
     pj_status_t status = pjsua_call_make_call(self.currentUser.accId, &uri, 0, NULL, NULL, &callId);
     self.currentSession.phone = destURI;
     self.currentSession.sessionType = 1;
@@ -247,6 +241,7 @@ static YLT_SipServer *sipShareData = nil;
     self.currentSession.callId = callId;
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"呼叫失败  %zd", status);
+        [[YLT_AudioManager shareInstance] configureAudioSessionEnd];
         self.callback(SIP_STATUS_CALL_FAILED, nil);
         [self save];
     }
@@ -256,17 +251,21 @@ static YLT_SipServer *sipShareData = nil;
  应答
  */
 - (void)answerCall {
-    //    pj_str_t reason = pj_str((char *)self.keyId.UTF8String);
+    if (self.currentSession.callId == PJSUA_INVALID_ID) {
+        return;
+    }
     BOOL res = [self.keys YLT_CheckString] && [self.keyId YLT_CheckString];
     if (res) {
         pjsua_call_set_user_data(self.currentSession.callId, (void *)self.keyId.UTF8String);
     }
     self.currentSession.unRead = 0;
+    [[YLT_AudioManager shareInstance] configureAudioSessionStart];
     pj_status_t status = pjsua_call_answer(self.currentSession.callId, 200, NULL, NULL);
     self.currentSession.sessionType = 0;
     self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
     if (status != PJ_SUCCESS) {
         YLT_LogError(@"应答失败");
+        [[YLT_AudioManager shareInstance] configureAudioSessionEnd];
         [self save];
         self.callback(SIP_STATUS_ANSWER_FAILED, nil);
     }
@@ -325,6 +324,7 @@ static YLT_SipServer *sipShareData = nil;
 }
 
 - (void)save {
+    [[YLT_AudioManager shareInstance] configureAudioSessionEnd];
     if (self.currentSession.startTime == 0) {
         self.currentSession.startTime = [[NSDate date] timeIntervalSince1970];
     }
@@ -438,7 +438,7 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
               ci.remote_info.ptr));
     [YLT_SipServer sharedInstance].currentSession.phone = [NSString stringWithUTF8String:ci.remote_info.ptr];
     [YLT_SipServer sharedInstance].currentSession.unRead = 1;//未读
-    if ([YLT_SipServer sharedInstance].currentSession.callId == 0) {
+    if ([YLT_SipServer sharedInstance].currentSession.callId == PJSUA_INVALID_ID) {
         [YLT_SipServer sharedInstance].currentSession.callId = call_id;
         
     } else {//当前通话处理占线状态
@@ -521,47 +521,6 @@ static void on_call_sdp_created(pjsua_call_id call_id,
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
         }
     }
-}
-
-
-/* 解密数据 */
-static int decrypt_aes(unsigned char* input, unsigned int input_len,
-                       unsigned char* output,  unsigned int outbuf_len,
-                       unsigned char* key, unsigned char *iv, int padding) {
-    int outlen, finallen, ret;
-    EVP_CIPHER_CTX ctx;
-    EVP_CIPHER_CTX_init(&ctx);
-    EVP_DecryptInit(&ctx, EVP_aes_128_cbc(), key, iv);
-    if (padding == 0)
-        EVP_CIPHER_CTX_set_padding(&ctx, padding);
-    if (!(ret = EVP_DecryptUpdate(&ctx, output, &outlen, input, input_len))) {
-        return 0;
-    }
-    if (!(ret = EVP_DecryptFinal(&ctx, output + outlen, &finallen))) {
-        return 0;
-    }
-    EVP_CIPHER_CTX_cleanup(&ctx);
-    return outlen + finallen;
-}
-
-/* 加密数据 */
-static int encrypt_aes(unsigned char* input, unsigned int input_len,
-                       unsigned char* output,  unsigned int outbuf_len,
-                       unsigned char* key, unsigned char *iv, int padding) {
-    int outlen, finallen;
-    EVP_CIPHER_CTX ctx;
-    EVP_CIPHER_CTX_init(&ctx);
-    EVP_EncryptInit(&ctx, EVP_aes_128_cbc(), key, iv);
-    if (padding == 0)
-        EVP_CIPHER_CTX_set_padding(&ctx, padding);
-    if (!EVP_EncryptUpdate(&ctx, output, &outlen, input, input_len)) {
-        return 0;
-    }
-    if (!EVP_EncryptFinal(&ctx, output + outlen, &finallen)) {
-        return 0;
-    }
-    EVP_CIPHER_CTX_cleanup(&ctx);
-    return outlen + finallen;
 }
 
 

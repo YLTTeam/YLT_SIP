@@ -15,9 +15,9 @@
 #endif
 
 @interface YLT_SipModular()<PKPushRegistryDelegate> {
-    
 }
 
+@property (nonatomic, assign) UIBackgroundTaskIdentifier taskIdentifier;
 @property (nonatomic, strong) UILocalNotification *callNotification;
 @property (nonatomic, strong) UNNotificationRequest *request;//ios 10
 
@@ -36,10 +36,12 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wstrict-prototypes"
 
 + (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-//    [[YLT_SipServer sharedInstance] autoLogin];
+    //    [[YLT_SipServer sharedInstance] autoLogin];
     PKPushRegistry *pushRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
     pushRegistry.delegate = [YLT_SipModular shareInstance];
     pushRegistry.desiredPushTypes = [NSSet setWithObjects:PKPushTypeVoIP, nil];
+    
+    
     if (@available(iOS 10.0, *)) {
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         [center requestAuthorizationWithOptions:(UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError *error) {
@@ -73,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
-    BOOL isCalling = false;
+    BOOL isCalling = true;
     switch ([UIApplication sharedApplication].applicationState) {
         case UIApplicationStateActive: {
             isCalling = false;
@@ -97,20 +99,46 @@ NS_ASSUME_NONNULL_BEGIN
         if ([YLT_SipModular shareInstance].tipCallback) {
             tips = [YLT_SipModular shareInstance].tipCallback(payload.dictionaryPayload);
         }
+        NSString *mobilephone = @"13316987488";
         //本地通知，实现响铃效果
         if (@available(iOS 10.0, *)) {
-            [[YLT_CallManager shareInstance] reportIncomingCallWithContact:[YLT_SipServer sharedInstance].currentUser completion:^(NSError * _Nonnull error) {
+            //            NSNumber *timeNumber = [bodyMap objectForKey:@"timestamp"];
+            //            NSTimeInterval timestamp = [timeNumber doubleValue];
+            //            NSTimeInterval cur_stamp = [[NSDate date] timeIntervalSince1970];
+            //            unsigned int time_delta = fabs(timestamp-cur_stamp);
+            //            if (timestamp >= cur_stamp || time_delta > time_abs_delta) {
+            //                NSLog(@"超过了时间戳，无效电话...");
+            //                return;
+            //            }
+            self.taskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+            
+            //            if (pjsua_get_state() == PJSUA_STATE_RUNNING) {//后台状态正常
+            //                return;
+            //            }
+            
+            //            [[YLT_SipServer sharedInstance].currentSession clear];
+            if (![YLT_SipServer sharedInstance].currentUser.loginState) {
+                [[YLT_SipServer sharedInstance] autoLogin];
+            }
+            
+            [[YLT_CallManager shareInstance] reportIncomingCallWithContact:@{@"mobilephone":mobilephone, @"username":self.displayNameCallback(mobilephone)} completion:^(NSError * _Nonnull error) {
             }];
-            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-            UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-            content.body = [NSString localizedUserNotificationStringForKey:tips arguments:nil];;
-            UNNotificationSound *customSound = [UNNotificationSound soundNamed:[[YLT_SipModular shareInstance].soundName YLT_CheckString]?[YLT_SipModular shareInstance].soundName:@"YLT_SIP/voip_call.caf"];
-            content.sound = customSound;
-            UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger
-                                                          triggerWithTimeInterval:1 repeats:NO];
-            [YLT_SipModular shareInstance].request = [UNNotificationRequest requestWithIdentifier:@"Voip_Push" content:content trigger:trigger];
-            [center addNotificationRequest:[YLT_SipModular shareInstance].request withCompletionHandler:^(NSError *error) {
-            }];
+            
+            dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(20 * NSEC_PER_SEC)), queue, ^{
+                [[UIApplication sharedApplication] endBackgroundTask:self.taskIdentifier];
+            });
+            
+            //            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+            //            UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+            //            content.body = [NSString localizedUserNotificationStringForKey:tips arguments:nil];;
+            //            UNNotificationSound *customSound = [UNNotificationSound soundNamed:[[YLT_SipModular shareInstance].soundName YLT_CheckString]?[YLT_SipModular shareInstance].soundName:@"YLT_SIP/voip_call.caf"];
+            //            content.sound = customSound;
+            //            UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger
+            //                                                          triggerWithTimeInterval:1 repeats:NO];
+            //            [YLT_SipModular shareInstance].request = [UNNotificationRequest requestWithIdentifier:@"Voip_Push" content:content trigger:trigger];
+            //            [center addNotificationRequest:[YLT_SipModular shareInstance].request withCompletionHandler:^(NSError *error) {
+            //            }];
         } else {
             [YLT_SipModular shareInstance].callNotification = [[UILocalNotification alloc] init];
             [YLT_SipModular shareInstance].callNotification.alertBody = tips;
@@ -132,6 +160,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (NSString *(^)(NSString *mobile))displayNameCallback {
+    if (!_displayNameCallback) {
+        _displayNameCallback = ^(NSString *mobile) {
+            return @"陌生号码";
+        };
+    }
+    return _displayNameCallback;
+}
+
 #pragma clang diagnostic pop
 NS_ASSUME_NONNULL_END
 @end
+
+

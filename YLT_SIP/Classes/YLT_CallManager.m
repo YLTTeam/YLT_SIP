@@ -57,45 +57,48 @@ YLT_ShareInstance(YLT_CallManager);
     }
 }
 
-- (NSUUID *)reportIncomingCallWithContact:(YLT_SipUser *)contact completion:(void(^)(NSError *_Nullable error))completion {
-    NSUUID *callUUID = [NSUUID UUID];
-    
+- (NSUUID *)reportIncomingCallWithContact:(NSDictionary *)contact completion:(void(^)(NSError *_Nullable error))completion {
     CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
-    CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:contact.username];
+    NSString *mobilephone = [contact.allKeys containsObject:@"mobilephone"] ? contact[@"mobilephone"] : @"";
+    CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:mobilephone];
     callUpdate.remoteHandle = handle;
-    callUpdate.localizedCallerName = self.displayNameCallback(contact.username);
-    [self.provider reportNewIncomingCallWithUUID:callUUID update:callUpdate completion:completion];
-    return callUUID;
+    NSString *username = [contact.allKeys containsObject:@"username"] ? contact[@"username"] : @"陌生来电";
+    callUpdate.localizedCallerName = username;
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+    
+    [self.provider reportNewIncomingCallWithUUID:self.currentUUID update:callUpdate completion:completion];
+    return self.currentUUID;
 }
 
-- (NSUUID *)reportOutgoingCallWithContact:(YLT_SipUser *)contact completion:(void(^)(NSError *_Nullable error))completion {
-    NSUUID *callUUID = [NSUUID UUID];
-    CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:contact.username];
+- (NSUUID *)reportOutgoingCallWithContact:(NSDictionary *)contact completion:(void(^)(NSError *_Nullable error))completion {
+    NSString *mobilephone = [contact.allKeys containsObject:@"mobilephone"] ? contact[@"mobilephone"] : @"";
+    CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:mobilephone];
     
-    CXStartCallAction *action = [[CXStartCallAction alloc] initWithCallUUID:callUUID handle:handle];
-    action.contactIdentifier = [callUUID UUIDString];
+    CXStartCallAction *action = [[CXStartCallAction alloc] initWithCallUUID:self.currentUUID handle:handle];
+    action.contactIdentifier = [self.currentUUID UUIDString];
     
     [self.callController requestTransaction:[CXTransaction transactionWithActions:@[action]] completion:completion];
-    return callUUID;
+    return self.currentUUID;
 }
 
-- (void)updateCall:(NSUUID *)callUUID state:(YLT_CallState)state {
-    if (callUUID) {
+
+- (void)updateCallState:(YLT_CallState)state {
+    if (self.currentUUID) {
         switch (state) {
             case YLT_CallStateConnecting:
-                [self.provider reportOutgoingCallWithUUID:callUUID startedConnectingAtDate:nil];
+                [self.provider reportOutgoingCallWithUUID:self.currentUUID startedConnectingAtDate:nil];
                 break;
             case YLT_CallStateConnected:
-                [self.provider reportOutgoingCallWithUUID:callUUID connectedAtDate:nil];
+                [self.provider reportOutgoingCallWithUUID:self.currentUUID connectedAtDate:nil];
                 break;
             case YLT_CallStateEnded:
-                [self.provider reportCallWithUUID:callUUID endedAtDate:nil reason:CXCallEndedReasonRemoteEnded];
+                [self.provider reportCallWithUUID:self.currentUUID endedAtDate:nil reason:CXCallEndedReasonRemoteEnded];
                 break;
             case YLT_CallStateEndedWithFailure:
-                [self.provider reportCallWithUUID:callUUID endedAtDate:nil reason:CXCallEndedReasonFailed];
+                [self.provider reportCallWithUUID:self.currentUUID endedAtDate:nil reason:CXCallEndedReasonFailed];
                 break;
             case YLT_CallStateEndedUnanswered:
-                [self.provider reportCallWithUUID:callUUID endedAtDate:nil reason:CXCallEndedReasonUnanswered];
+                [self.provider reportCallWithUUID:self.currentUUID endedAtDate:nil reason:CXCallEndedReasonUnanswered];
                 break;
             default:
                 break;
@@ -164,6 +167,7 @@ YLT_ShareInstance(YLT_CallManager);
     
 }
 
+#pragma mark - setter getter
 - (NSString *(^)(NSString *mobile))displayNameCallback {
     if (!_displayNameCallback) {
         _displayNameCallback = ^(NSString *mobile) {
@@ -171,6 +175,13 @@ YLT_ShareInstance(YLT_CallManager);
         };
     }
     return _displayNameCallback;
+}
+
+- (NSUUID *)currentUUID {
+    if (!_currentUUID) {
+        _currentUUID = [NSUUID UUID];
+    }
+    return _currentUUID;
 }
 @end
 NS_ASSUME_NONNULL_END

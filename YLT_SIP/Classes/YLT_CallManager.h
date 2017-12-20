@@ -30,6 +30,7 @@ typedef NS_ENUM(NSInteger, YLT_CallState) {
 
 @interface YLT_CallManager : NSObject
 
+@property (nonatomic, strong) NSUUID *currentUUID;
 @property (nonatomic, strong) dispatch_queue_t completionQueue;
 
 /**
@@ -43,10 +44,9 @@ YLT_ShareInstanceHeader(YLT_CallManager);
            supportsVideo:(BOOL)supportsVideo
  actionNotificationBlock:(void(^)(CXCallAction *action, YLT_CallActionType actionType))actionNotificationBlock;
 
-
-- (NSUUID *)reportIncomingCallWithContact:(YLT_SipUser *)contact completion:(void(^)(NSError * error))completion;
-- (NSUUID *)reportOutgoingCallWithContact:(YLT_SipUser *)contact completion:(void(^)(NSError * error))completion;
-- (void)updateCall:(NSUUID *)callUUID state:(YLT_CallState)state;
+- (NSUUID *)reportIncomingCallWithContact:(NSDictionary *)contact completion:(void(^)(NSError * error))completion;
+- (NSUUID *)reportOutgoingCallWithContact:(NSDictionary *)contact completion:(void(^)(NSError * error))completion;
+- (void)updateCallState:(YLT_CallState)state;
 
 - (void)mute:(BOOL)mute callUUID:(NSUUID *)callUUID completion:(void(^)(NSError * error))completion;
 - (void)hold:(BOOL)hold callUUID:(NSUUID *)callUUID completion:(void(^)(NSError * error))completion;

@@ -203,7 +203,7 @@
 - (void)clear {
     self.answer = NO;
     self.sessionType = 0;
-    self.callId = 0;
+    self.callId = PJSUA_INVALID_ID;
     self.phone = @"";
     self.sessionType = 0;
     self.extra = @"";

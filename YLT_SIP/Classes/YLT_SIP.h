@@ -12,5 +12,7 @@
 #import "YLT_SipServer.h"
 #import "YLT_SipSession.h"
 #import "YLT_SipModular.h"
+#import "YLT_CallManager.h"
+#import "YLT_AudioManager.h"
 
 #endif /* YLT_SIP_h */
