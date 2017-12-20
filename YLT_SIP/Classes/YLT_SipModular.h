@@ -13,6 +13,7 @@
 #define YLT_SIPBundle [NSBundle bundleWithURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"YLT_Faceboard" withExtension:@"bundle"]]
 #define YLT_SIPImage(name) [UIImage imageNamed:name inBundle:YLT_FaceboardBundle compatibleWithTraitCollection:nil]
 
+
 @interface YLT_SipModular : YLT_BaseModular
 
 YLT_ShareInstanceHeader(YLT_SipModular);
@@ -32,8 +33,8 @@ YLT_ShareInstanceHeader(YLT_SipModular);
 @property (nonatomic, copy) NSString *(^tipCallback)(NSDictionary *payload);
 
 /**
- 通过mobile获取用户名
+ 通过userId获取用户名
  */
-@property (nonatomic, copy) NSString *(^displayNameCallback)(NSString *mobile);
+@property (nonatomic, copy) NSDictionary *(^displayNameCallback)(NSInteger userId);
 
 @end
