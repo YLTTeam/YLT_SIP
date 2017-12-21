@@ -72,7 +72,7 @@ typedef NS_ENUM(NSUInteger, SipStatus) {
 /**
  自动登录
  */
-- (void)autoLogin;
+- (void)autoLoginCallback:(void(^)(BOOL success))callback;
 
 /**
  退出登录

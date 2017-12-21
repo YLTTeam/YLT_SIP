@@ -14,6 +14,7 @@
 #import <ReactiveObjC/ReactiveObjC.h>
 #import "YLT_CallAudio.h"
 #import "YLT_CallManager.h"
+#import "YLT_SipModular.h"
 
 #define THIS_FILE "YLT_SipServer.m"
 
@@ -187,7 +188,7 @@ static YLT_SipServer *sipShareData = nil;
 /**
  自动登录
  */
-- (void)autoLogin {
+- (void)autoLoginCallback:(void(^)(BOOL success))callback {
     [self.currentSession clear];
     self.currentUser.loginState = NO;
     if ([self.currentUser read] && self.currentUser.check) {//读取上次登录的用户数据
@@ -195,6 +196,9 @@ static YLT_SipServer *sipShareData = nil;
         @weakify(self);
         [self registerServiceOnServer:self.currentUser.domain port:self.currentUser.port username:self.currentUser.username password:self.currentUser.password callback:^(BOOL success) {
             @strongify(self);
+            if (callback) {
+                callback(success);
+            }
         }];
     }
 }
@@ -429,6 +433,7 @@ static void call_status_change(pjsua_call_info ci) {
 static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
                              pjsip_rx_data *rdata) {
     [[YLT_SipServer sharedInstance].currentSession clear];
+    
     pjsua_call_info ci;
     PJ_UNUSED_ARG(acc_id);
     PJ_UNUSED_ARG(rdata);
@@ -440,13 +445,16 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
     [YLT_SipServer sharedInstance].currentSession.unRead = 1;//未读
     if ([YLT_SipServer sharedInstance].currentSession.callId == PJSUA_INVALID_ID) {
         [YLT_SipServer sharedInstance].currentSession.callId = call_id;
-        
+        if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && [UIApplication sharedApplication].applicationState != UIApplicationStateInactive) {
+            [[YLT_SipModular shareInstance] awakeCall];
+        }
     } else {//当前通话处理占线状态
         [YLT_SipServer sharedInstance].callback(SIP_STATUS_BUSYING, nil);
         [[YLT_SipServer sharedInstance] save];
         return;
     }
     [YLT_SipServer sharedInstance].callback(SIP_STATUS_INCOMING, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
+    
 }
 
 /* 呼出状态改变的回调 */

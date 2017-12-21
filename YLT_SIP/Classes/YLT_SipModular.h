@@ -37,4 +37,8 @@ YLT_ShareInstanceHeader(YLT_SipModular);
  */
 @property (nonatomic, copy) NSDictionary *(^displayNameCallback)(NSInteger userId);
 
+//唤起接听页面
+- (void)awakeCall;
+
 @end
+

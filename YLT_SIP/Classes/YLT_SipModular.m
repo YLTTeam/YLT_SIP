@@ -69,6 +69,7 @@
 @property (nonatomic, assign) UIBackgroundTaskIdentifier taskIdentifier;
 @property (nonatomic, strong) UILocalNotification *callNotification;
 @property (nonatomic, strong) UNNotificationRequest *request;//ios 10
+@property (nonatomic, strong) PushMessage *push;
 
 @end
 
@@ -144,13 +145,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     if (isCalling){
+        YLT_WEAKSELF
         NSString *tips = @"邀请您进行加密通话...";
         if ([YLT_SipModular shareInstance].tipCallback) {
             tips = [YLT_SipModular shareInstance].tipCallback(payload.dictionaryPayload);
         }
-        
+        if (self.push != nil) {
+            YLT_LogError(@"上一通电话未结束");
+            return;
+        }
         [YLT_CallManager shareInstance].currentUUID = nil;
-        PushMessage *push = nil;
         if (payload.dictionaryPayload && [payload.dictionaryPayload.allKeys containsObject:@"aps"]) {
             NSDictionary *aps = [payload.dictionaryPayload objectForKey:@"aps"];
             if ([aps.allKeys containsObject:@"alert"] && [[aps objectForKey:@"alert"] YLT_CheckString]) {
@@ -158,38 +162,31 @@ NS_ASSUME_NONNULL_BEGIN
                 [res stringByReplacingOccurrencesOfString:@"\\" withString:@""];
                 NSDictionary *alert = [NSJSONSerialization JSONObjectWithData:[res dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:nil];
                 if (alert) {
-                    push = [PushMessage mj_objectWithKeyValues:alert];
+                    weakSelf.push = [PushMessage mj_objectWithKeyValues:alert];
                 }
             }
         }
-        if (push == nil) {
+        if (weakSelf.push == nil) {
             return;
         }
-        NSDictionary *userInfo = self.displayNameCallback(push.fromUser);
-        push.fromUsername = userInfo[@"username"];
-        push.fromMobilephone = userInfo[@"mobilephone"];
+        NSDictionary *userInfo = self.displayNameCallback(weakSelf.push.fromUser);
+        weakSelf.push.fromUsername = userInfo[@"username"];
+        weakSelf.push.fromMobilephone = userInfo[@"mobilephone"];
         //本地通知，实现响铃效果
         if (@available(iOS 10.0, *)) {
-            if ([push.cmd isEqualToString:@"call"]) {
+            if ([weakSelf.push.cmd isEqualToString:@"call"]) {
                 NSTimeInterval cur_stamp = [[NSDate date] timeIntervalSince1970];
-                unsigned int time_delta = fabs(push.timestamp.doubleValue-cur_stamp);
-                if (push.timestamp.doubleValue >= cur_stamp || time_delta > 45) {
-                    [self sendNotificationTitle:@"未接来电" tip:push.fromUsername];
-                    return;
-                }
-                self.taskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+                unsigned int time_delta = fabs(weakSelf.push.timestamp.doubleValue-cur_stamp);
+                //                if (weakSelf.push.timestamp.doubleValue >= cur_stamp || time_delta > 45) {
+                //                    [self sendNotificationTitle:@"未接来电" tip:weakSelf.push.fromUsername];
+                //                    return;
+                //                }
                 
                 if (![YLT_SipServer sharedInstance].currentUser.loginState) {
-                    [[YLT_SipServer sharedInstance] autoLogin];
+                    [[YLT_SipServer sharedInstance] autoLoginCallback:^(BOOL success) {
+                    }];
+                } else {
                 }
-                
-                [[YLT_CallManager shareInstance] reportIncomingCallWithContact:@{@"mobilephone":push.fromMobilephone, @"username":push.fromUsername} completion:^(NSError * _Nonnull error) {
-                }];
-                
-                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(20 * NSEC_PER_SEC)), queue, ^{
-                    [[UIApplication sharedApplication] endBackgroundTask:self.taskIdentifier];
-                });
             }
         } else {
             [YLT_SipModular shareInstance].callNotification = [[UILocalNotification alloc] init];
@@ -198,6 +195,33 @@ NS_ASSUME_NONNULL_BEGIN
             [YLT_SipModular shareInstance].callNotification.soundName = [[YLT_SipModular shareInstance].soundName YLT_CheckString]?[YLT_SipModular shareInstance].soundName:@"YLT_SIP/voip_call.caf";
             [[UIApplication sharedApplication] presentLocalNotificationNow:[YLT_SipModular shareInstance].callNotification];
         }
+    }
+}
+
+- (void)awakeCall {
+    self.taskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+    [[YLT_CallManager shareInstance] reportIncomingCallWithContact:@{@"mobilephone":self.push.fromMobilephone, @"username":self.push.fromUsername} completion:^(NSError * _Nonnull error) {
+    }];
+    
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(20 * NSEC_PER_SEC)), queue, ^{
+        [[UIApplication sharedApplication] endBackgroundTask:self.taskIdentifier];
+    });
+    self.push = nil;
+}
+
+/**
+ 接收电话
+ */
+- (void)accept:(NSString *)mobilephone {
+    pj_str_t to;
+    to = pj_str([NSString stringWithFormat:@"sip:%@@%@", mobilephone, [YLT_SipServer sharedInstance].currentUser.domain].UTF8String);
+    pj_str_t text;
+    text = pj_str([NSString stringWithFormat:@"%@woshixiangpuhua", [YLT_SipServer sharedInstance].currentUser.username].UTF8String);
+    //    pjsua_im_send(<#pjsua_acc_id acc_id#>, <#const pj_str_t *to#>, <#const pj_str_t *mime_type#>, <#const pj_str_t *content#>, <#const pjsua_msg_data *msg_data#>, <#void *user_data#>)
+    pj_status_t status = pjsua_im_send([YLT_SipServer sharedInstance].currentUser.accId, &to, NULL, &text, NULL, NULL);
+    if (status != PJ_SUCCESS) {
+        YLT_LogError(@"error %zd", status);
     }
 }
 
@@ -213,7 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
     [YLT_SipModular shareInstance].request = [UNNotificationRequest requestWithIdentifier:@"Voip_Push" content:content trigger:trigger];
     [center addNotificationRequest:[YLT_SipModular shareInstance].request withCompletionHandler:^(NSError *error) {
     }];
-
+    
 }
 
 - (void)onCancelRing {

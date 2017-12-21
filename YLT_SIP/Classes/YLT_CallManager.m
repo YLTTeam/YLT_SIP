@@ -127,6 +127,7 @@ YLT_ShareInstance(YLT_CallManager);
 #pragma mark - CXProviderDelegate
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(nonnull CXAnswerCallAction *)action {
     [[YLT_CallAudio shareInstance] configureAudio];
+    
     if (self.actionNotificationBlock) {
         self.actionNotificationBlock(action, YLT_CallActionTypeAnswer);
     }
@@ -134,7 +135,14 @@ YLT_ShareInstance(YLT_CallManager);
 }
 
 - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
-    [[YLT_CallAudio shareInstance] startAudio];
+    pjsua_set_snd_dev(0, 0);
+    pjsua_set_snd_dev(PJMEDIA_AUD_DEFAULT_CAPTURE_DEV, PJMEDIA_AUD_DEFAULT_PLAYBACK_DEV);
+    //    [[YLT_CallAudio shareInstance] startAudio];
+}
+
+- (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSession *)audioSession {
+    pjsua_set_snd_dev(0, 0);
+    pjsua_set_no_snd_dev();
 }
 
 - (void)provider:(CXProvider *)provider performEndCallAction:(nonnull CXEndCallAction *)action {
