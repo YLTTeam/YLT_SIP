@@ -43,7 +43,7 @@ static void on_call_sdp_created(pjsua_call_id call_id,
 /**
  密钥 安全密钥必须
  */
-@property (nonatomic, strong) NSString *keys;
+@property (nonatomic, strong) NSData *keys;
 /**
  key id 用来获取加密密钥的key
  */
@@ -51,7 +51,7 @@ static void on_call_sdp_created(pjsua_call_id call_id,
 /**
  通过KEY ID 获取Key 非安全通话 不比理会
  */
-@property (nonatomic, copy) NSString *(^keysBlock)(NSString *keyId);
+@property (nonatomic, copy) NSData *(^keysBlock)(NSString *keyId);
 
 @end
 
@@ -258,7 +258,7 @@ static YLT_SipServer *sipShareData = nil;
     if (self.currentSession.callId == PJSUA_INVALID_ID) {
         return;
     }
-    BOOL res = [self.keys YLT_CheckString] && [self.keyId YLT_CheckString];
+    BOOL res = self.keys.length != 0 && [self.keyId YLT_CheckString];
     if (res) {
         pjsua_call_set_user_data(self.currentSession.callId, (void *)self.keyId.UTF8String);
     }
@@ -398,7 +398,7 @@ static void call_status_change(pjsua_call_info ci) {
         case PJSIP_INV_STATE_DISCONNECTED: {
             if ([YLT_SipServer sharedInstance].currentSession.state == PJSIP_INV_STATE_CALLING) {
                 printf("呼叫失败！");
-                [YLT_SipServer sharedInstance].callback(SIP_STATUS_CALL_FAILED, nil);
+                [YLT_SipServer sharedInstance].callback(SIP_STATUS_CALL_FAILED, @{@"name":[NSString stringWithUTF8String:ci.remote_info.ptr]});
             } else {
                 [YLT_SipServer sharedInstance].callback(SIP_STATUS_DISCONNECTED, nil);
             }
@@ -414,8 +414,8 @@ static void call_status_change(pjsua_call_info ci) {
     if (ci.state == PJSIP_INV_STATE_CONNECTING) {
         pjmedia_key_clear();
     } else if (ci.state == PJSIP_INV_STATE_CONFIRMED) {
-        if (ci.remote_key.ptr && [[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.remote_key.ptr]] && [YLT_SipServer sharedInstance].keyId.YLT_CheckString && [YLT_SipServer sharedInstance].keys.YLT_CheckString) {
-            pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.UTF8String, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
+        if (ci.remote_key.ptr && [[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.remote_key.ptr]] && [YLT_SipServer sharedInstance].keyId.YLT_CheckString && ([YLT_SipServer sharedInstance].keys.length != 0)) {
+            pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.bytes, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
             [YLT_SipServer sharedInstance].keyId = @"";
             [YLT_SipServer sharedInstance].keys = @"";
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_SAFE, nil);
