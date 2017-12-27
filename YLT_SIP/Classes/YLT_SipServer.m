@@ -306,6 +306,7 @@ static YLT_SipServer *sipShareData = nil;
 - (YLT_SipSession *)currentSession {
     if (!_currentSession) {
         _currentSession = [[YLT_SipSession alloc] init];
+        [_currentSession clear];
     }
     return _currentSession;
 }
@@ -334,6 +335,7 @@ static YLT_SipServer *sipShareData = nil;
     self.currentSession.endTime = [[NSDate date] timeIntervalSince1970];
     [self.currentSession saveCallback:^(BOOL success, id response) {
     }];
+    [self.currentSession clear];
 }
 
 @end
@@ -417,11 +419,11 @@ static void call_status_change(pjsua_call_info ci) {
         if (ci.remote_key.ptr && [[YLT_SipServer sharedInstance].keyId isEqualToString:[NSString stringWithUTF8String:ci.remote_key.ptr]] && [YLT_SipServer sharedInstance].keyId.YLT_CheckString && ([YLT_SipServer sharedInstance].keys.length != 0)) {
             pjmedia_set_key((unsigned char *)[YLT_SipServer sharedInstance].keys.bytes, (unsigned int)[YLT_SipServer sharedInstance].keys.length);
             [YLT_SipServer sharedInstance].keyId = @"";
-            [YLT_SipServer sharedInstance].keys = @"";
+            [YLT_SipServer sharedInstance].keys = nil;
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_SAFE, nil);
         } else {
             [YLT_SipServer sharedInstance].keyId = @"";
-            [YLT_SipServer sharedInstance].keys = @"";
+            [YLT_SipServer sharedInstance].keys = nil;
             [YLT_SipServer sharedInstance].callback(SIP_STATUS_UNSAFE, nil);
         }
     }
@@ -432,7 +434,6 @@ static void call_status_change(pjsua_call_info ci) {
 /* 收到呼入电话的回调 */
 static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
                              pjsip_rx_data *rdata) {
-    [[YLT_SipServer sharedInstance].currentSession clear];
     
     pjsua_call_info ci;
     PJ_UNUSED_ARG(acc_id);
