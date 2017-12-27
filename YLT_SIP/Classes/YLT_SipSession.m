@@ -55,7 +55,7 @@
         BOOL result = NO;
         @try {
             [db open];
-            result = [db executeUpdate:@"DELETE FROM DB_YLT_SipSession WHERE %@", sender];
+            result = [db executeUpdate:[NSString stringWithFormat:@"DELETE FROM DB_YLT_SipSession WHERE %@", sender]];
             [db close];
         } @catch (NSException *exception) {
             YLT_LogError(@"数据库异常");
@@ -93,7 +93,7 @@
         BOOL result = NO;
         @try {
             [db open];
-            result = [db executeUpdate:@"UPDATE DB_YLT_SipSession SET ", sender];
+            result = [db executeUpdate:[NSString stringWithFormat:@"UPDATE DB_YLT_SipSession SET %@", sender]];
             [db close];
         } @catch (NSException *exception) {
             YLT_LogError(@"数据库异常");
